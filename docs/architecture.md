@@ -22,6 +22,8 @@ NavigationRun
         +--> metrics engine ------+
         |                         |
         +--> failure rules -------+--> AnalysisArtifact
+        |                         |
+        +--> diagnostics ---------+
                                       |
                                       +--> analysis.json
                                       +--> report.md
@@ -36,6 +38,7 @@ NavigationRun
 - `navigation_analyzer.io.rosbag2`: ROS2 adapter scaffold.
 - `navigation_analyzer.analysis.metrics`: deterministic metric functions.
 - `navigation_analyzer.analysis.failures`: rule-based failure taxonomy.
+- `navigation_analyzer.analysis.diagnostics`: non-fatal evaluation warnings.
 - `navigation_analyzer.reporting.markdown`: compact AI-readable report.
 - `navigation_analyzer.api.app`: local artifact server.
 - `navigation_analyzer.cli.main`: Typer command surface.

@@ -60,6 +60,7 @@ def benchmark(
                 "source": artifact.run.source,
                 "metrics": {key: metric.value for key, metric in artifact.metrics.items()},
                 "failures": [failure.model_dump(mode="json") for failure in artifact.failures],
+                "diagnostics": [diagnostic.model_dump(mode="json") for diagnostic in artifact.diagnostics],
                 "final_sample": artifact.run.samples[-1].model_dump(mode="json") if artifact.run.samples else None,
                 "derived": {
                     "final_stopped_duration_s": _final_stopped_duration(artifact.run.samples, stopped_velocity_threshold),
@@ -150,14 +151,19 @@ def _benchmark_summary(rows: list[dict]) -> dict:
         if numeric:
             metric_means[f"{name}_mean"] = sum(numeric) / len(numeric)
     failure_type_counts: dict[str, int] = {}
+    diagnostic_type_counts: dict[str, int] = {}
     for row in rows:
         for failure in row["failures"]:
             failure_type = failure["failure_type"]
             failure_type_counts[failure_type] = failure_type_counts.get(failure_type, 0) + 1
+        for diagnostic in row.get("diagnostics", []):
+            diagnostic_type = diagnostic["diagnostic_type"]
+            diagnostic_type_counts[diagnostic_type] = diagnostic_type_counts.get(diagnostic_type, 0) + 1
     return {
         "run_count": len(rows),
         "metric_means": metric_means,
         "failure_type_counts": failure_type_counts,
+        "diagnostic_type_counts": diagnostic_type_counts,
     }
 
 

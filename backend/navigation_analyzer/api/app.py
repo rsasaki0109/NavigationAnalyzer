@@ -36,4 +36,8 @@ def create_app(analysis_path: Path) -> FastAPI:
     def failures() -> list[dict]:
         return [failure.model_dump(mode="json") for failure in load_artifact().failures]
 
+    @app.get("/diagnostics")
+    def diagnostics() -> list[dict]:
+        return [diagnostic.model_dump(mode="json") for diagnostic in load_artifact().diagnostics]
+
     return app

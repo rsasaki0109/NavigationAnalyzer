@@ -29,6 +29,7 @@ The goal is a navigation failure analysis platform for ROS2/Nav2 and Autoware: D
   - dynamic obstacle freeze
   - planner divergence
 - JSON and Markdown reports for AI agents and CI.
+- Structured diagnostics for non-fatal evaluation warnings.
 - React/Three.js/Plotly web visualization with trajectory replay, metrics, timeline, failure markers, and costmap/obstacle views.
 - Docker workflow for Autoware planning simulator bags.
 
@@ -246,6 +247,25 @@ Example failure finding:
   "possible_causes": [
     "local planner instability",
     "inflation radius too large"
+  ]
+}
+```
+
+Example diagnostic:
+
+```json
+{
+  "diagnostic_type": "goal_reached_route_progress_mismatch",
+  "timestamp": 42.0,
+  "level": "warning",
+  "confidence": 0.74,
+  "summary": "Goal tolerance was satisfied before the matched lanelet route centerline was fully traversed.",
+  "evidence": {
+    "route_lanelet_progress_ratio": 0.79,
+    "route_lanelet_remaining_distance_m": 14.0
+  },
+  "recommendations": [
+    "Check whether the mission goal lies before the end of the final lanelet."
   ]
 }
 ```

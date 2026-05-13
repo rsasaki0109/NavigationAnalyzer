@@ -29,6 +29,16 @@ export type FailureFinding = {
   possible_causes: string[];
 };
 
+export type DiagnosticFinding = {
+  diagnostic_type: string;
+  timestamp: number;
+  level: "info" | "warning";
+  confidence: number;
+  summary: string;
+  evidence: Record<string, unknown>;
+  recommendations: string[];
+};
+
 export type AnalysisArtifact = {
   schema_version: string;
   run: {
@@ -49,6 +59,7 @@ export type AnalysisArtifact = {
   };
   metrics: Record<string, MetricResult>;
   failures: FailureFinding[];
+  diagnostics?: DiagnosticFinding[];
 };
 
 export type BenchmarkRun = {
@@ -56,6 +67,7 @@ export type BenchmarkRun = {
   source: string;
   metrics: Record<string, number | boolean | null>;
   failures: FailureFinding[];
+  diagnostics?: DiagnosticFinding[];
   final_sample?: NavigationSample | null;
   derived?: Record<string, number | string | boolean | null>;
 };

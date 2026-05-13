@@ -110,13 +110,13 @@ def render_benchmark_markdown(payload: dict[str, Any]) -> str:
         "",
         "## Runs",
         "",
-        "| Run | Success | Goal Distance | Yaw Error | Lateral | Longitudinal | Stopped | Collisions | Failures | Path Length |",
-        "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
+        "| Run | Success | Goal Distance | Yaw Error | Lateral | Longitudinal | Stopped | Collisions | Failures | Diagnostics | Path Length |",
+        "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
     ]
     for row in rows:
         metrics = row["metrics"]
         lines.append(
-            "| {run_id} | {success} | {goal_distance} | {yaw_error} | {lateral} | {longitudinal} | {stopped} | {collisions} | {failures} | {path_length} |".format(
+            "| {run_id} | {success} | {goal_distance} | {yaw_error} | {lateral} | {longitudinal} | {stopped} | {collisions} | {failures} | {diagnostics} | {path_length} |".format(
                 run_id=row["run_id"],
                 success=_fmt(metrics.get("success_rate")),
                 goal_distance=_fmt(metrics.get("goal_distance")),
@@ -126,6 +126,7 @@ def render_benchmark_markdown(payload: dict[str, Any]) -> str:
                 stopped=_fmt(metrics.get("final_stopped_duration")),
                 collisions=_fmt(metrics.get("collision_count")),
                 failures=len(row.get("failures", [])),
+                diagnostics=len(row.get("diagnostics", [])),
                 path_length=_fmt(metrics.get("path_length")),
             )
         )
@@ -150,6 +151,14 @@ def render_benchmark_markdown(payload: dict[str, Any]) -> str:
             lines.append(f"- `{failure_type}`: {count}")
     else:
         lines.append("No failures detected.")
+
+    lines.extend(["", "## Diagnostic Types", ""])
+    diagnostic_type_counts = summary.get("diagnostic_type_counts", {})
+    if diagnostic_type_counts:
+        for diagnostic_type, count in sorted(diagnostic_type_counts.items()):
+            lines.append(f"- `{diagnostic_type}`: {count}")
+    else:
+        lines.append("No diagnostics emitted.")
 
     lines.extend(["", "## Threshold Violations", ""])
     violations = threshold_result.get("violations", [])

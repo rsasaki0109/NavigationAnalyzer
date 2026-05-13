@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Activity, AlertTriangle, BarChart3, Gauge, Upload } from "lucide-react";
+import { Activity, AlertTriangle, BarChart3, Gauge, Info, Upload } from "lucide-react";
 import { BenchmarkDashboard } from "./components/BenchmarkDashboard";
 import { FailureTimeline } from "./components/FailureTimeline";
 import { MetricDashboard } from "./components/MetricDashboard";
@@ -106,6 +106,7 @@ export default function App() {
           </label>
           <span><Gauge size={17} /> {analysis.metrics.success_rate.value}</span>
           <span><AlertTriangle size={17} /> {analysis.failures.length}</span>
+          <span><Info size={17} /> {analysis.diagnostics?.length ?? 0}</span>
           <span><Activity size={17} /> {analysis.run.samples.length}</span>
         </div>
       </header>

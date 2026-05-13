@@ -17,11 +17,29 @@ export function MetricDashboard({ analysis }: { analysis: AnalysisArtifact }) {
   const metricEntries = Object.values(analysis.metrics);
   const numeric = metricEntries.filter((metric) => typeof metric.value === "number");
   const samples = analysis.run.samples;
+  const diagnostics = analysis.diagnostics ?? [];
   const routeSummary = analysis.run.metadata.route_summary;
   const route = isRouteSummary(routeSummary) ? routeSummary : null;
 
   return (
     <div className="dashboardGrid">
+      {diagnostics.length ? (
+        <section className="panel">
+          <h2>Diagnostics</h2>
+          <div className="diagnosticList">
+            {diagnostics.map((diagnostic) => (
+              <article key={`${diagnostic.diagnostic_type}-${diagnostic.timestamp}`} data-level={diagnostic.level}>
+                <div>
+                  <strong>{diagnostic.diagnostic_type}</strong>
+                  <span>{diagnostic.level}</span>
+                </div>
+                <p>{diagnostic.summary}</p>
+                <small>{formatMetric(diagnostic.timestamp)}s · confidence {formatMetric(diagnostic.confidence)}</small>
+              </article>
+            ))}
+          </div>
+        </section>
+      ) : null}
       {route ? (
         <section className="panel">
           <h2>Route Summary</h2>

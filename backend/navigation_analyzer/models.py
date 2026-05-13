@@ -13,6 +13,11 @@ class Severity(str, Enum):
     high = "high"
 
 
+class DiagnosticLevel(str, Enum):
+    info = "info"
+    warning = "warning"
+
+
 class Point2D(BaseModel):
     x: float
     y: float
@@ -77,6 +82,16 @@ class FailureFinding(BaseModel):
     possible_causes: list[str] = Field(default_factory=list)
 
 
+class DiagnosticFinding(BaseModel):
+    diagnostic_type: str
+    timestamp: float
+    level: DiagnosticLevel
+    confidence: float = Field(ge=0.0, le=1.0)
+    summary: str
+    evidence: dict[str, Any] = Field(default_factory=dict)
+    recommendations: list[str] = Field(default_factory=list)
+
+
 class RosbagTopicConfig(BaseModel):
     tf: list[str] = Field(default_factory=lambda: ["/tf"])
     localization_pose: list[str] = Field(default_factory=lambda: ["/amcl_pose", "/pose", "/localization_pose"])
@@ -106,6 +121,9 @@ class AnalyzerConfig(BaseModel):
     localization_drift_m: float = 0.7
     narrow_passage_distance_m: float = 0.35
     planner_divergence_m: float = 1.2
+    route_progress_mismatch_ratio: float = 0.95
+    route_progress_mismatch_remaining_m: float = 3.0
+    route_lanelet_deviation_warning_m: float = 1.0
     rosbag_topics: RosbagTopicConfig = Field(default_factory=RosbagTopicConfig)
 
 
@@ -114,6 +132,7 @@ class AnalysisArtifact(BaseModel):
     run: NavigationRun
     metrics: dict[str, MetricResult]
     failures: list[FailureFinding]
+    diagnostics: list[DiagnosticFinding] = Field(default_factory=list)
 
     def write_json(self, path: Path) -> None:
         path.parent.mkdir(parents=True, exist_ok=True)

@@ -543,3 +543,37 @@ Unit coverage:
   synthetic lanelet2 OSM relation -> centerline.
   route_lanelet_centerline_distance, mean/max distance, progress, remaining distance, and matched count.
 ```
+
+## 2026-05-13: Non-fatal diagnostics layer
+
+### Tried
+
+Add `DiagnosticFinding` records alongside failures. Diagnostics report evaluation warnings without changing `success_rate` or benchmark failure status by default.
+
+Initial diagnostics:
+
+- `goal_reached_route_progress_mismatch`
+- `route_lanelet_deviation`
+
+### Benefits
+
+- Captures Autoware-specific ambiguity where goal tolerance passes before the matched route lanelet sequence is fully traversed.
+- Gives AI agents structured warning evidence without over-labeling a successful run as a navigation failure.
+- Keeps benchmark gates focused while still surfacing observability signals in JSON, Markdown, API, and UI.
+
+### Tradeoffs
+
+- Diagnostics are advisory; threshold gating for diagnostics is not implemented yet.
+- `goal_reached_route_progress_mismatch` depends on the current lanelet centerline parser and can reflect map/route geometry semantics rather than controller behavior.
+
+### Decision
+
+Adopted. The failure taxonomy should stay conservative, while diagnostics can surface useful review signals earlier.
+
+### Validation
+
+```text
+Unit coverage:
+  goal_reached_route_progress_mismatch emits when success=1.0, lanelet progress=0.79, remaining=14m.
+  route_lanelet_deviation emits when max centerline distance exceeds configured warning threshold.
+```

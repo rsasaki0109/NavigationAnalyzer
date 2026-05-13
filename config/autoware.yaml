@@ -9,6 +9,9 @@ deadlock_goal_distance_m: 1.0
 localization_drift_m: 0.7
 narrow_passage_distance_m: 0.35
 planner_divergence_m: 1.5
+route_progress_mismatch_ratio: 0.95
+route_progress_mismatch_remaining_m: 3.0
+route_lanelet_deviation_warning_m: 1.0
 rosbag_topics:
   tf:
     - /tf

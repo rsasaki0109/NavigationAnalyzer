@@ -51,6 +51,7 @@ Endpoints:
 - `GET /analysis`
 - `GET /metrics`
 - `GET /failures`
+- `GET /diagnostics`
 
 ## Canonical Input
 
@@ -140,6 +141,22 @@ For Autoware `autoware_planning_msgs/msg/LaneletRoute`, NavigationAnalyzer store
         "inflation radius too large"
       ]
     }
+  ],
+  "diagnostics": [
+    {
+      "diagnostic_type": "goal_reached_route_progress_mismatch",
+      "timestamp": 42.0,
+      "level": "warning",
+      "confidence": 0.74,
+      "summary": "Goal tolerance was satisfied before the matched lanelet route centerline was fully traversed.",
+      "evidence": {
+        "route_lanelet_progress_ratio": 0.79,
+        "route_lanelet_remaining_distance_m": 14.0
+      },
+      "recommendations": [
+        "Check whether the mission goal lies before the end of the final lanelet."
+      ]
+    }
   ]
 }
 ```
@@ -209,3 +226,14 @@ For Autoware runs, `planner_divergence` evidence can include:
   "route_goal_distance_m": 48.7
 }
 ```
+
+## Diagnostic Design
+
+Diagnostics are non-fatal structured warnings. They do not change `success_rate` and are separate from `FailureFinding`.
+
+Initial diagnostics:
+
+| Diagnostic | Signal |
+| --- | --- |
+| `goal_reached_route_progress_mismatch` | success is true, but lanelet route progress remains below the configured ratio with remaining centerline distance |
+| `route_lanelet_deviation` | maximum distance to matched route lanelet centerline exceeds the configured warning threshold |

@@ -14,6 +14,7 @@ def render_markdown_report(artifact: AnalysisArtifact) -> str:
         f"- Samples: {len(artifact.run.samples)}",
         f"- Success: {metrics['success_rate'].value}",
         f"- Failure findings: {len(artifact.failures)}",
+        f"- Diagnostics: {len(artifact.diagnostics)}",
         "",
         "## Metrics",
         "",
@@ -61,6 +62,25 @@ def render_markdown_report(artifact: AnalysisArtifact) -> str:
                     f"- Confidence: {finding.confidence:.2f}",
                     f"- Evidence: `{finding.evidence}`",
                     f"- Possible causes: {causes}",
+                    "",
+                ]
+            )
+    lines.extend(["", "## Diagnostics", ""])
+    if not artifact.diagnostics:
+        lines.append("No diagnostics emitted.")
+    else:
+        for diagnostic in artifact.diagnostics:
+            recommendations = ", ".join(diagnostic.recommendations)
+            lines.extend(
+                [
+                    f"### {diagnostic.diagnostic_type}",
+                    "",
+                    f"- Timestamp: {diagnostic.timestamp:.3f}s",
+                    f"- Level: {diagnostic.level.value}",
+                    f"- Confidence: {diagnostic.confidence:.2f}",
+                    f"- Summary: {diagnostic.summary}",
+                    f"- Evidence: `{diagnostic.evidence}`",
+                    f"- Recommendations: {recommendations}",
                     "",
                 ]
             )

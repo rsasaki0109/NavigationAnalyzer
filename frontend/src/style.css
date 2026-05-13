@@ -265,6 +265,61 @@ main {
   font-size: 12px;
 }
 
+.diagnosticList {
+  display: grid;
+  gap: 8px;
+}
+
+.diagnosticList article {
+  display: grid;
+  gap: 6px;
+  padding: 10px;
+  border: 1px solid #d7dce3;
+  border-left: 4px solid #276ef1;
+  border-radius: 6px;
+  background: #f8fafc;
+}
+
+.diagnosticList article[data-level="warning"] {
+  border-left-color: #e67700;
+}
+
+.diagnosticList article div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.diagnosticList strong {
+  overflow-wrap: anywhere;
+  font-size: 13px;
+}
+
+.diagnosticList span {
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: #dbeafe;
+  color: #1d4ed8;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.diagnosticList article[data-level="warning"] span {
+  background: #fff4df;
+  color: #9a4d00;
+}
+
+.diagnosticList p {
+  margin: 0;
+  color: #334155;
+  font-size: 13px;
+}
+
+.diagnosticList small {
+  color: #64748b;
+}
+
 .dashboardGrid {
   display: grid;
   grid-template-columns: 1fr;
