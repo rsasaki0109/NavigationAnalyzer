@@ -23,6 +23,12 @@ class FailureThreshold(BaseModel):
     max_severity: Literal["low", "medium", "high"] | None = None
 
 
+class DiagnosticThreshold(BaseModel):
+    max_count: int | None = None
+    disallow_types: list[str] = Field(default_factory=list)
+    max_level: Literal["info", "warning"] | None = None
+
+
 class GoalThreshold(BaseModel):
     xy_goal_tolerance_m: float | None = None
     yaw_goal_tolerance_rad: float | None = None
@@ -38,6 +44,7 @@ class BenchmarkThresholds(BaseModel):
     goal: GoalThreshold = Field(default_factory=GoalThreshold)
     metrics: dict[str, MetricThreshold] = Field(default_factory=dict)
     failures: FailureThreshold = Field(default_factory=FailureThreshold)
+    diagnostics: DiagnosticThreshold = Field(default_factory=DiagnosticThreshold)
 
 
 def load_thresholds(path: Path | None) -> BenchmarkThresholds | None:
@@ -210,6 +217,7 @@ def _evaluate_row(row: dict[str, Any], thresholds: BenchmarkThresholds) -> list[
     violations = []
     metrics = row.get("metrics", {})
     failures = row.get("failures", [])
+    diagnostics = row.get("diagnostics", [])
 
     if thresholds.goal.require_success and metrics.get("success_rate") != 1.0:
         violations.append(_violation(row, "goal.require_success", "success_rate must be 1.0"))
@@ -275,6 +283,39 @@ def _evaluate_row(row: dict[str, Any], thresholds: BenchmarkThresholds) -> list[
                     _violation(row, "failures.max_severity", f"{failure['failure_type']} severity {failure['severity']} exceeds {max_severity}")
                 )
 
+    if thresholds.diagnostics.max_count is not None and len(diagnostics) > thresholds.diagnostics.max_count:
+        violations.append(
+            _violation(
+                row,
+                "diagnostics.max_count",
+                f"diagnostic count {len(diagnostics)} exceeds {thresholds.diagnostics.max_count}",
+            )
+        )
+
+    disallowed_diagnostics = set(thresholds.diagnostics.disallow_types)
+    for diagnostic in diagnostics:
+        if diagnostic["diagnostic_type"] in disallowed_diagnostics:
+            violations.append(
+                _violation(
+                    row,
+                    "diagnostics.disallow_types",
+                    f"disallowed diagnostic {diagnostic['diagnostic_type']}",
+                )
+            )
+
+    max_level = thresholds.diagnostics.max_level
+    if max_level is not None:
+        max_allowed = _diagnostic_level_rank(max_level)
+        for diagnostic in diagnostics:
+            if _diagnostic_level_rank(diagnostic["level"]) > max_allowed:
+                violations.append(
+                    _violation(
+                        row,
+                        "diagnostics.max_level",
+                        f"{diagnostic['diagnostic_type']} level {diagnostic['level']} exceeds {max_level}",
+                    )
+                )
+
     return violations
 
 
@@ -309,6 +350,10 @@ def _violation(row: dict[str, Any], check: str, message: str) -> dict[str, Any]:
 
 def _severity_rank(severity: str) -> int:
     return {"low": 1, "medium": 2, "high": 3}[severity]
+
+
+def _diagnostic_level_rank(level: str) -> int:
+    return {"info": 1, "warning": 2}[level]
 
 
 def _threshold_label(threshold_result: dict[str, Any]) -> str:
@@ -354,11 +399,12 @@ def _comparable_metrics(row: dict[str, Any]) -> dict[str, float]:
         if isinstance(value, int | float) and not isinstance(value, bool)
     }
     metrics["failure_count"] = float(len(row.get("failures", [])))
+    metrics["diagnostic_count"] = float(len(row.get("diagnostics", [])))
     return metrics
 
 
 def _metric_direction(metric_name: str) -> str:
-    higher_is_better = {"success_rate", "minimum_obstacle_distance", "final_stopped_duration"}
+    higher_is_better = {"success_rate", "minimum_obstacle_distance", "final_stopped_duration", "route_lanelet_progress_ratio"}
     absolute_lower_is_better = {"final_lateral_error", "final_longitudinal_error", "final_yaw_error"}
     if metric_name in higher_is_better:
         return "higher_is_better"

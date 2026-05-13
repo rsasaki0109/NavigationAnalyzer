@@ -19,12 +19,14 @@ The output contains:
 - `summary.run_count`
 - `summary.metric_means`
 - `summary.failure_type_counts`
+- `summary.diagnostic_type_counts`
 - `thresholds.passed`
 - `thresholds.violations`
 - `comparisons.baseline_run_id`
 - `comparisons.metric_deltas`
 - per-run metrics
 - per-run structured failure findings
+- per-run structured diagnostics
 - Markdown comparisons for best goal distance, shortest path, fastest goal reach, and fewest failures
 - Markdown baseline diffs for metric regressions against the first run
 
@@ -49,6 +51,18 @@ navigation-analyzer benchmark \
 `config/benchmark_nav2.yaml` follows Nav2-style goal checking: require success, enforce XY goal tolerance, keep collision count zero, and block high-risk failure classes. Nav2 SimpleGoalChecker exposes `xy_goal_tolerance` and `yaw_goal_tolerance`, both defaulting to `0.25` in the current docs.
 
 `config/benchmark_autoware.yaml` follows Autoware-style arrival checks: goal proximity, final stopped command, stopped duration, and no high-severity failures. Autoware Mission Planner documents arrival check parameters for angle, lateral distance, longitudinal undershoot/overshoot, and duration. Autoware's goal distance calculator publishes lateral, longitudinal, and yaw deviations from goal.
+
+Diagnostics are advisory by default, but threshold profiles can gate them:
+
+```yaml
+diagnostics:
+  max_count: 0
+  max_level: info
+  disallow_types:
+    - goal_reached_route_progress_mismatch
+```
+
+`diagnostic_count` is also included in baseline diffs, so a candidate run that introduces new warnings is visible even when hard thresholds still pass.
 
 References:
 

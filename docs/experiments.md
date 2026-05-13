@@ -577,3 +577,38 @@ Unit coverage:
   goal_reached_route_progress_mismatch emits when success=1.0, lanelet progress=0.79, remaining=14m.
   route_lanelet_deviation emits when max centerline distance exceeds configured warning threshold.
 ```
+
+## 2026-05-13: Optional diagnostic benchmark gates
+
+### Tried
+
+Add `diagnostics` thresholds to benchmark profiles:
+
+- `max_count`
+- `max_level`
+- `disallow_types`
+
+Also add `diagnostic_count` to baseline comparisons.
+
+### Benefits
+
+- Keeps diagnostics advisory unless a benchmark profile explicitly gates them.
+- Lets strict CI profiles fail on new warning classes without reclassifying warnings as failures.
+- Makes warning regressions visible in multi-run comparisons.
+
+### Tradeoffs
+
+- Diagnostic levels are intentionally simple: `info` and `warning`.
+- Existing Autoware profile allows warnings, because the current tutorial bag intentionally emits `goal_reached_route_progress_mismatch`.
+
+### Decision
+
+Adopted. This keeps the failure taxonomy conservative while giving CI users control over warning policy.
+
+### Validation
+
+```text
+Unit coverage:
+  disallowed diagnostic type fails benchmark thresholds.
+  candidate run with a new diagnostic_count is flagged as a baseline regression.
+```

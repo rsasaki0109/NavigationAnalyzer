@@ -28,3 +28,5 @@ failures:
   disallow_types:
     - collision
     - deadlock
+diagnostics:
+  max_level: warning

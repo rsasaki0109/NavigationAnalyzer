@@ -237,3 +237,13 @@ Initial diagnostics:
 | --- | --- |
 | `goal_reached_route_progress_mismatch` | success is true, but lanelet route progress remains below the configured ratio with remaining centerline distance |
 | `route_lanelet_deviation` | maximum distance to matched route lanelet centerline exceeds the configured warning threshold |
+
+Benchmark profiles can optionally gate diagnostics with:
+
+```yaml
+diagnostics:
+  max_count: 0
+  max_level: info
+  disallow_types:
+    - goal_reached_route_progress_mismatch
+```

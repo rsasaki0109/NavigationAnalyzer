@@ -102,6 +102,57 @@ def test_benchmark_markdown_includes_violations():
     assert "goal.require_success" in markdown
 
 
+def test_diagnostic_thresholds_can_gate_warning_types():
+    thresholds = load_thresholds(Path("config/benchmark_autoware.yaml"))
+    thresholds.diagnostics.disallow_types = ["goal_reached_route_progress_mismatch"]
+    row = {
+        "run_id": "route_warning",
+        "metrics": {
+            "success_rate": 1.0,
+            "goal_distance": 0.2,
+            "final_lateral_error": 0.1,
+            "final_longitudinal_error": 0.1,
+            "final_yaw_error": 0.1,
+            "final_stopped_duration": 3.0,
+            "collision_count": 0,
+        },
+        "failures": [],
+        "diagnostics": [
+            {
+                "diagnostic_type": "goal_reached_route_progress_mismatch",
+                "level": "warning",
+            }
+        ],
+        "final_sample": {"cmd_v": 0.0, "cmd_w": 0.0},
+    }
+
+    result = evaluate_benchmark([row], thresholds)
+
+    assert result["passed"] is False
+    assert "diagnostics.disallow_types" in {violation["check"] for violation in result["violations"]}
+
+
+def test_diagnostic_count_is_compared_against_baseline():
+    rows = [
+        {"run_id": "baseline", "metrics": {"success_rate": 1.0}, "failures": [], "diagnostics": []},
+        {
+            "run_id": "candidate",
+            "metrics": {"success_rate": 1.0},
+            "failures": [],
+            "diagnostics": [{"diagnostic_type": "route_lanelet_deviation", "level": "warning"}],
+        },
+    ]
+
+    comparisons = compare_to_baseline(rows)
+
+    diagnostic_delta = next(
+        delta
+        for delta in comparisons["metric_deltas"]
+        if delta["run_id"] == "candidate" and delta["metric"] == "diagnostic_count"
+    )
+    assert diagnostic_delta["regression"] is True
+
+
 def test_compare_to_baseline_flags_metric_regressions():
     rows = [
         {
