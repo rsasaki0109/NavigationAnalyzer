@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 from navigation_analyzer.io.rosbag2 import read_rosbag2
+from navigation_analyzer.io.unitree_record_nav import read_unitree_record_nav_log
 from navigation_analyzer.models import AnalyzerConfig, NavigationRun
 
 
@@ -25,6 +26,8 @@ def read_navigation_run(path: Path, config: AnalyzerConfig | None = None) -> Nav
         return read_rosbag2(path, config)
     if path.suffix.lower() in {".json", ".jsonl"}:
         return _read_json(path)
+    if path.suffix.lower() in {".log", ".txt"}:
+        return read_unitree_record_nav_log(path)
     return read_rosbag2(path, config)
 
 

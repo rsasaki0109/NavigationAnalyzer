@@ -173,6 +173,18 @@ navigation-analyzer report \
   --out outputs/sample/report.md
 ```
 
+Analyze a unitree-nav-sim `record_nav_demo.py` smoke log directly:
+
+```bash
+PYTHONPATH=backend python3 -m navigation_analyzer.cli.main analyze \
+  --bag /path/to/unitree-nav-sim/log/smoke_nav2_g1_full/isaac.log \
+  --out outputs/unitree_t7_contact_checked
+```
+
+The log importer preserves goal distance, commanded velocity, minimum obstacle
+clearance, PhysX obstacle overlap count, and obstacle contact report
+event/impulse metadata.
+
 ## Nav2 Simulation Path
 
 Use TurtleBot3 + Nav2 when you want a small real ROS2 bag:

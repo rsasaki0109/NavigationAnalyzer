@@ -87,8 +87,11 @@ def _deadlock(samples, config: AnalyzerConfig) -> list[FailureFinding]:
 
 
 def _narrow_passage(samples, config: AnalyzerConfig) -> list[FailureFinding]:
+    active_samples = _after_first_motion(samples)
+    if not active_samples:
+        return []
     candidates = [
-        sample for sample in samples
+        sample for sample in active_samples
         if sample.goal_distance is not None
         and sample.goal_distance > config.goal_tolerance_m
         and sample.obstacle_distance is not None
@@ -111,8 +114,11 @@ def _narrow_passage(samples, config: AnalyzerConfig) -> list[FailureFinding]:
 
 
 def _dynamic_obstacle_freeze(samples) -> list[FailureFinding]:
+    active_samples = _after_first_motion(samples)
+    if not active_samples:
+        return []
     close_and_frozen = [
-        sample for sample in samples
+        sample for sample in active_samples
         if sample.goal_distance is not None
         and sample.goal_distance > 0.8
         and sample.obstacle_distance is not None
@@ -133,6 +139,13 @@ def _dynamic_obstacle_freeze(samples) -> list[FailureFinding]:
             possible_causes=["obstacle persistence too long", "velocity obstacle over-conservative", "scene not clearing in costmap"],
         )
     ]
+
+
+def _after_first_motion(samples, speed_threshold: float = 0.05):
+    for index, sample in enumerate(samples):
+        if abs(sample.cmd_v) > speed_threshold or abs(sample.cmd_w) > speed_threshold:
+            return samples[index:]
+    return []
 
 
 def _planner_divergence(run: NavigationRun, config: AnalyzerConfig) -> list[FailureFinding]:
