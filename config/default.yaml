@@ -1,0 +1,51 @@
+goal_tolerance_m: 0.5
+collision_distance_m: 0.18
+oscillation_window_s: 6.0
+oscillation_sign_changes: 5
+deadlock_speed_mps: 0.04
+deadlock_duration_s: 8.0
+deadlock_goal_distance_m: 1.0
+localization_drift_m: 0.7
+narrow_passage_distance_m: 0.35
+planner_divergence_m: 1.2
+rosbag_topics:
+  tf:
+    - /tf
+  localization_pose:
+    - /amcl_pose
+    - /pose
+    - /localization_pose
+  odometry:
+    - /odom
+    - /odometry/filtered
+    - /localization/kinematic_state
+  cmd_vel:
+    - /cmd_vel
+    - /cmd_vel_nav
+    - /cmd_vel_smoothed
+  scan:
+    - /scan
+    - /front/scan
+  pointcloud:
+    - /points
+    - /pointcloud
+    - /velodyne_points
+  plan:
+    - /plan
+    - /global_plan
+    - /planner_server/plan
+  trajectory:
+    - /local_plan
+    - /trajectory
+    - /controller_server/trajectory
+  costmap:
+    - /global_costmap/costmap
+    - /local_costmap/costmap
+    - /costmap
+  goal:
+    - /goal_pose
+    - /goal
+  recovery:
+    - /behavior_server/transition_event
+    - /recoveries
+    - /recovery_status

@@ -1,0 +1,30 @@
+schema_version: navigation-analyzer.thresholds.v1
+profile: autoware
+description: >
+  Autoware-style benchmark gate inspired by arrival checks: require close goal
+  distance, stopped final command, and no high-severity failures.
+goal:
+  xy_goal_tolerance_m: 1.0
+  stopped_velocity_mps: 0.05
+  stopped_duration_s: 2.0
+  require_success: true
+metrics:
+  success_rate:
+    equals: 1.0
+  goal_distance:
+    max: 1.0
+  final_lateral_error:
+    max: 0.5
+  final_longitudinal_error:
+    min: -2.0
+    max: 2.0
+  final_yaw_error:
+    max: 0.25
+  collision_count:
+    equals: 0
+failures:
+  max_count: 2
+  max_severity: medium
+  disallow_types:
+    - collision
+    - deadlock

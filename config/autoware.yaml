@@ -1,0 +1,56 @@
+lanelet2_map: /home/aw/autoware_data/maps/sample-map-planning/lanelet2_map.osm
+goal_tolerance_m: 1.0
+collision_distance_m: 0.18
+oscillation_window_s: 6.0
+oscillation_sign_changes: 5
+deadlock_speed_mps: 0.04
+deadlock_duration_s: 8.0
+deadlock_goal_distance_m: 1.0
+localization_drift_m: 0.7
+narrow_passage_distance_m: 0.35
+planner_divergence_m: 1.5
+rosbag_topics:
+  tf:
+    - /tf
+  localization_pose:
+    - /localization/pose_twist_fusion_filter/pose_with_covariance
+    - /localization/kinematic_state
+    - /localization/pose_estimator/pose_with_covariance
+    - /sensing/gnss/pose_with_covariance
+  odometry:
+    - /localization/kinematic_state
+    - /vehicle/status/velocity_status
+    - /odom
+  cmd_vel:
+    - /control/command/control_cmd
+    - /control/command/actuation_cmd
+    - /control/trajectory_follower/control_cmd
+    - /cmd_vel
+  scan:
+    - /scan
+  pointcloud:
+    - /sensing/lidar/top/pointcloud
+    - /sensing/lidar/concatenated/pointcloud
+    - /points_raw
+    - /points
+  plan:
+    - /planning/scenario_planning/trajectory
+    - /planning/scenario_planning/lane_driving/trajectory
+    - /planning/mission_planning/route
+    - /plan
+  trajectory:
+    - /planning/scenario_planning/trajectory
+    - /planning/scenario_planning/lane_driving/trajectory
+    - /control/trajectory_follower/reference_trajectory
+  costmap:
+    - /planning/scenario_planning/parking/costmap
+    - /global_costmap/costmap
+    - /local_costmap/costmap
+  goal:
+    - /planning/mission_planning/goal
+    - /planning/mission_planning/echo_back_goal_pose
+    - /planning/mission_planning/modified_goal
+    - /goal_pose
+  recovery:
+    - /system/emergency/control_cmd
+    - /api/autoware/get/emergency

@@ -1,0 +1,50 @@
+{
+  "run_id": "sample_nav2_failure_001",
+  "source": "examples/sample_bag/sample_navigation.json",
+  "goal": { "x": 5.0, "y": 0.0 },
+  "metadata": {
+    "robot": "diff_drive",
+    "stack": "nav2",
+    "scenario": "narrow passage with oscillation and freeze",
+    "map": "sample_corridor"
+  },
+  "planned_path": [
+    { "x": 0.0, "y": 0.0 },
+    { "x": 1.0, "y": 0.0 },
+    { "x": 2.0, "y": 0.0 },
+    { "x": 3.0, "y": 0.0 },
+    { "x": 4.0, "y": 0.0 },
+    { "x": 5.0, "y": 0.0 }
+  ],
+  "costmap": {
+    "width": 8,
+    "height": 5,
+    "resolution": 0.5,
+    "origin": { "x": -0.5, "y": -1.25 },
+    "data": [
+      90, 80, 70, 60, 70, 80, 90, 100,
+      70, 30, 10, 5, 20, 60, 80, 95,
+      30, 5, 0, 0, 15, 80, 95, 100,
+      70, 30, 10, 5, 30, 80, 95, 100,
+      90, 80, 70, 60, 70, 90, 100, 100
+    ]
+  },
+  "samples": [
+    { "t": 0.0, "pose": { "x": 0.0, "y": 0.0, "yaw": 0.0 }, "cmd_v": 0.30, "cmd_w": 0.00, "goal_distance": 5.0, "obstacle_distance": 1.4, "collision": false, "recovery_event": false, "localization_error": 0.04 },
+    { "t": 1.0, "pose": { "x": 0.35, "y": 0.0, "yaw": 0.0 }, "cmd_v": 0.35, "cmd_w": 0.00, "goal_distance": 4.65, "obstacle_distance": 1.1, "collision": false, "recovery_event": false, "localization_error": 0.05 },
+    { "t": 2.0, "pose": { "x": 0.75, "y": 0.02, "yaw": 0.05 }, "cmd_v": 0.32, "cmd_w": 0.05, "goal_distance": 4.25, "obstacle_distance": 0.85, "collision": false, "recovery_event": false, "localization_error": 0.08 },
+    { "t": 3.0, "pose": { "x": 1.15, "y": 0.03, "yaw": 0.03 }, "cmd_v": 0.25, "cmd_w": -0.05, "goal_distance": 3.85, "obstacle_distance": 0.62, "collision": false, "recovery_event": false, "localization_error": 0.10 },
+    { "t": 4.0, "pose": { "x": 1.45, "y": 0.10, "yaw": 0.24 }, "cmd_v": 0.08, "cmd_w": 0.38, "goal_distance": 3.57, "obstacle_distance": 0.32, "collision": false, "recovery_event": false, "localization_error": 0.14 },
+    { "t": 5.0, "pose": { "x": 1.50, "y": 0.13, "yaw": -0.18 }, "cmd_v": 0.02, "cmd_w": -0.42, "goal_distance": 3.52, "obstacle_distance": 0.29, "collision": false, "recovery_event": false, "localization_error": 0.18 },
+    { "t": 6.0, "pose": { "x": 1.54, "y": 0.11, "yaw": 0.22 }, "cmd_v": 0.01, "cmd_w": 0.40, "goal_distance": 3.48, "obstacle_distance": 0.27, "collision": false, "recovery_event": false, "localization_error": 0.22 },
+    { "t": 7.0, "pose": { "x": 1.56, "y": 0.12, "yaw": -0.20 }, "cmd_v": 0.00, "cmd_w": -0.39, "goal_distance": 3.46, "obstacle_distance": 0.26, "collision": false, "recovery_event": true, "localization_error": 0.30 },
+    { "t": 8.0, "pose": { "x": 1.58, "y": 0.10, "yaw": 0.23 }, "cmd_v": 0.00, "cmd_w": 0.41, "goal_distance": 3.44, "obstacle_distance": 0.24, "collision": false, "recovery_event": false, "localization_error": 0.42 },
+    { "t": 9.0, "pose": { "x": 1.59, "y": 0.10, "yaw": -0.25 }, "cmd_v": 0.00, "cmd_w": -0.43, "goal_distance": 3.43, "obstacle_distance": 0.22, "collision": false, "recovery_event": false, "localization_error": 0.60 },
+    { "t": 10.0, "pose": { "x": 1.60, "y": 0.10, "yaw": 0.24 }, "cmd_v": 0.00, "cmd_w": 0.44, "goal_distance": 3.42, "obstacle_distance": 0.20, "collision": false, "recovery_event": true, "localization_error": 0.76 },
+    { "t": 11.0, "pose": { "x": 1.61, "y": 0.10, "yaw": -0.22 }, "cmd_v": 0.00, "cmd_w": -0.44, "goal_distance": 3.41, "obstacle_distance": 0.19, "collision": false, "recovery_event": false, "localization_error": 0.82 },
+    { "t": 12.0, "pose": { "x": 1.61, "y": 0.10, "yaw": -0.22 }, "cmd_v": 0.00, "cmd_w": 0.00, "goal_distance": 3.41, "obstacle_distance": 0.45, "collision": false, "recovery_event": false, "localization_error": 0.90 },
+    { "t": 13.0, "pose": { "x": 1.61, "y": 0.10, "yaw": -0.22 }, "cmd_v": 0.00, "cmd_w": 0.00, "goal_distance": 3.41, "obstacle_distance": 0.42, "collision": false, "recovery_event": false, "localization_error": 0.92 },
+    { "t": 14.0, "pose": { "x": 1.61, "y": 0.10, "yaw": -0.22 }, "cmd_v": 0.00, "cmd_w": 0.00, "goal_distance": 3.41, "obstacle_distance": 0.40, "collision": false, "recovery_event": false, "localization_error": 0.94 },
+    { "t": 15.0, "pose": { "x": 1.61, "y": 0.10, "yaw": -0.22 }, "cmd_v": 0.00, "cmd_w": 0.00, "goal_distance": 3.41, "obstacle_distance": 0.17, "collision": true, "recovery_event": true, "localization_error": 0.96 }
+  ]
+}

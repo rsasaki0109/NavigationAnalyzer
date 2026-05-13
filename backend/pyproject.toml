@@ -1,0 +1,21 @@
+[project]
+name = "navigation-analyzer"
+version = "0.1.0"
+description = "CLI-first navigation observability and failure analysis for ROS2/Nav2 bags."
+readme = "../README.md"
+requires-python = ">=3.10"
+authors = [{ name = "NavigationAnalyzer contributors" }]
+dependencies = [
+  "fastapi>=0.110",
+  "pydantic>=2",
+  "pyyaml>=6",
+  "typer>=0.12",
+  "uvicorn>=0.27"
+]
+
+[project.scripts]
+navigation-analyzer = "navigation_analyzer.cli.main:app"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["navigation_analyzer*"]

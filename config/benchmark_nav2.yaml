@@ -1,0 +1,25 @@
+schema_version: navigation-analyzer.thresholds.v1
+profile: nav2
+description: >
+  Nav2-style benchmark gate inspired by SimpleGoalChecker: require success,
+  enforce XY goal tolerance, and keep collision/failure counts bounded.
+goal:
+  xy_goal_tolerance_m: 0.5
+  yaw_goal_tolerance_rad: 0.25
+  require_success: true
+metrics:
+  success_rate:
+    equals: 1.0
+  goal_distance:
+    max: 0.5
+  final_yaw_error:
+    max: 0.25
+  collision_count:
+    equals: 0
+failures:
+  max_count: 1
+  max_severity: medium
+  disallow_types:
+    - collision
+    - deadlock
+    - planner_divergence

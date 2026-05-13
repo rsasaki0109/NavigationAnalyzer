@@ -1,0 +1,9 @@
+[project]
+name = "navigation-analyzer-workspace"
+version = "0.1.0"
+description = "Workspace metadata for NavigationAnalyzer."
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+pythonpath = ["backend"]
+testpaths = ["tests"]
