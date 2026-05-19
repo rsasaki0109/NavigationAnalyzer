@@ -11,7 +11,7 @@ from navigation_analyzer.api import create_app
 from navigation_analyzer.benchmarking import compare_to_baseline, evaluate_benchmark, load_thresholds, render_benchmark_markdown
 from navigation_analyzer.config import load_config
 from navigation_analyzer.io import read_navigation_run
-from navigation_analyzer.reporting import render_markdown_report
+from navigation_analyzer.reporting import render_diagnosis_markdown, render_markdown_report
 
 app = typer.Typer(help="NavigationAnalyzer: CLI-first navigation observability for ROS2/Nav2.")
 
@@ -30,12 +30,16 @@ def analyze(
     analysis_path = out / "analysis.json"
     report_path = out / "report.md"
     diagnosis_pack_path = out / "diagnosis_pack.json"
+    diagnosis_md_path = out / "diagnosis.md"
     artifact.write_json(analysis_path)
     report_path.write_text(render_markdown_report(artifact), encoding="utf-8")
-    build_diagnosis_pack(artifact).write_json(diagnosis_pack_path)
+    diagnosis_pack = build_diagnosis_pack(artifact)
+    diagnosis_pack.write_json(diagnosis_pack_path)
+    diagnosis_md_path.write_text(render_diagnosis_markdown(diagnosis_pack), encoding="utf-8")
     typer.echo(f"Wrote {analysis_path}")
     typer.echo(f"Wrote {report_path}")
     typer.echo(f"Wrote {diagnosis_pack_path}")
+    typer.echo(f"Wrote {diagnosis_md_path}")
 
 
 @app.command()

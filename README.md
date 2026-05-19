@@ -242,6 +242,7 @@ NavigationAnalyzer is designed around structured artifacts:
 - `navigation_run.json`: canonical normalized run.
 - `analysis.json`: metrics, failures, source data, and metadata.
 - `diagnosis_pack.json`: compact LLM/CI-oriented run summary with hypotheses, evidence windows, and missing signals.
+- `diagnosis.md`: PR-comment-ready Markdown rendering of `diagnosis_pack.json` (verdict, top hypotheses, missing signals).
 - `report.md`: human-readable run report.
 - `benchmark.json`: comparable multi-run benchmark data.
 - `benchmark.md`: human-readable comparison report.

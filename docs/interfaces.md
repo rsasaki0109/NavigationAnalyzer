@@ -317,3 +317,29 @@ Design rules for this layer:
 - Each hypothesis carries one `EvidenceWindow` (default ±5s around the failure timestamp, clipped to the run range) with summarized signal stats so agents can avoid reading the full `samples` array.
 - `missing_signals` enumerates absent inputs (no `obstacle_distance`, no `costmap`, no `route_context`, etc.) to keep AI agents honest about what was *not* observed.
 - `passed` is conservative: it requires `success_rate == 1.0` and no failures.
+
+`analyze` additionally writes `diagnosis.md`, a Markdown rendering of the same `DiagnosisPack`. It is designed to be tight enough to paste into a PR comment:
+
+```markdown
+# Navigation Diagnosis: sample_nav2_failure_001
+
+**FAIL** · success_rate=0 · 4 failures · 0 diagnostics
+
+Primary failure: `localization_drift`
+
+- Source: `examples/sample_bag/sample_navigation.json` (canonical_json)
+- Profile: `nav2`
+- Duration: 15.00s · 16 samples
+
+## Top Hypotheses
+
+### 1. Localization error grew beyond drift threshold  `hyp_001`
+**Confidence:** 0.82 · **Severity:** medium · **Source:** localization_drift @ t=15.00s
+...
+Evidence window `win_001` (t=10.00–15.00s):
+- localization_error: trend=rising, min=0.760, max=0.960
+- cmd_w: sign_changes=1, max_abs=0.440
+
+## Missing Signals
+- route_context
+```
