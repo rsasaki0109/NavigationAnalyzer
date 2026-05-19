@@ -247,3 +247,73 @@ diagnostics:
   disallow_types:
     - goal_reached_route_progress_mismatch
 ```
+
+## DiagnosisPack
+
+`analyze` also emits `diagnosis_pack.json`, a compact LLM/CI-oriented artifact derived from `AnalysisArtifact`. It is a separate layer from `analysis.json`:
+
+| Layer | Purpose |
+| --- | --- |
+| `NavigationRun` | observed facts |
+| `AnalysisArtifact` | computed metrics, failures, diagnostics |
+| `DiagnosisPack` | compressed explanation for humans, agents, and CI Markdown |
+
+`diagnosis_pack.json` schema:
+
+```json
+{
+  "schema_version": "navigation-analyzer.diagnosis_pack.v1",
+  "run": {
+    "run_id": "sample_nav2_failure_001",
+    "source": "examples/sample_bag/sample_navigation.json",
+    "source_type": "canonical_json",
+    "profile": "nav2",
+    "duration_s": 15.0,
+    "sample_count": 16,
+    "goal": { "x": 5.0, "y": 0.0, "yaw": 0.0 }
+  },
+  "outcome": {
+    "passed": false,
+    "success_rate": 0.0,
+    "primary_failure": "localization_drift",
+    "failure_count": 4,
+    "diagnostic_count": 0
+  },
+  "top_hypotheses": [
+    {
+      "id": "hyp_001",
+      "title": "Localization error grew beyond drift threshold",
+      "confidence": 0.82,
+      "severity": "medium",
+      "supporting_observations": ["localization_error_m = 0.9600"],
+      "alternative_causes": ["poor scan matching", "map mismatch"],
+      "next_checks": ["Inspect: poor scan matching"],
+      "evidence_window_ids": ["win_001"],
+      "source_failure_type": "localization_drift",
+      "source_timestamp": 15.0
+    }
+  ],
+  "evidence_windows": [
+    {
+      "id": "win_001",
+      "t_start": 10.0,
+      "t_end": 15.0,
+      "reason": "localization_drift centered at t=15.00s (medium)",
+      "signals": {
+        "sample_count": 6,
+        "cmd_w": { "sign_changes": 1, "max_abs": 0.44 },
+        "goal_distance": { "min": 3.41, "max": 3.42, "trend": "flat" },
+        "localization_error": { "trend": "rising", "max": 0.96 }
+      }
+    }
+  ],
+  "missing_signals": ["route_context"]
+}
+```
+
+Design rules for this layer:
+
+- Hypotheses are lifted 1:1 from rule-based `FailureFinding` records. The pack ranker does not invent causes; LLM consumers explain, they do not classify.
+- Each hypothesis carries one `EvidenceWindow` (default ±5s around the failure timestamp, clipped to the run range) with summarized signal stats so agents can avoid reading the full `samples` array.
+- `missing_signals` enumerates absent inputs (no `obstacle_distance`, no `costmap`, no `route_context`, etc.) to keep AI agents honest about what was *not* observed.
+- `passed` is conservative: it requires `success_rate == 1.0` and no failures.

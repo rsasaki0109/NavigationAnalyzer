@@ -137,3 +137,55 @@ class AnalysisArtifact(BaseModel):
     def write_json(self, path: Path) -> None:
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(self.model_dump_json(indent=2), encoding="utf-8")
+
+
+class DiagnosisRunSummary(BaseModel):
+    run_id: str
+    source: str
+    source_type: str = "unknown"
+    profile: str | None = None
+    duration_s: float = 0.0
+    sample_count: int = 0
+    goal: Pose2D | None = None
+
+
+class DiagnosisOutcome(BaseModel):
+    passed: bool
+    success_rate: float | None = None
+    primary_failure: str | None = None
+    failure_count: int = 0
+    diagnostic_count: int = 0
+
+
+class EvidenceWindow(BaseModel):
+    id: str
+    t_start: float
+    t_end: float
+    reason: str
+    signals: dict[str, Any] = Field(default_factory=dict)
+
+
+class Hypothesis(BaseModel):
+    id: str
+    title: str
+    confidence: float = Field(ge=0.0, le=1.0)
+    severity: Severity
+    supporting_observations: list[str] = Field(default_factory=list)
+    alternative_causes: list[str] = Field(default_factory=list)
+    next_checks: list[str] = Field(default_factory=list)
+    evidence_window_ids: list[str] = Field(default_factory=list)
+    source_failure_type: str | None = None
+    source_timestamp: float | None = None
+
+
+class DiagnosisPack(BaseModel):
+    schema_version: str = "navigation-analyzer.diagnosis_pack.v1"
+    run: DiagnosisRunSummary
+    outcome: DiagnosisOutcome
+    top_hypotheses: list[Hypothesis] = Field(default_factory=list)
+    evidence_windows: list[EvidenceWindow] = Field(default_factory=list)
+    missing_signals: list[str] = Field(default_factory=list)
+
+    def write_json(self, path: Path) -> None:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(self.model_dump_json(indent=2), encoding="utf-8")

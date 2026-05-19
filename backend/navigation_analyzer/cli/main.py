@@ -6,7 +6,7 @@ from pathlib import Path
 import typer
 import uvicorn
 
-from navigation_analyzer.analysis import analyze_run
+from navigation_analyzer.analysis import analyze_run, build_diagnosis_pack
 from navigation_analyzer.api import create_app
 from navigation_analyzer.benchmarking import compare_to_baseline, evaluate_benchmark, load_thresholds, render_benchmark_markdown
 from navigation_analyzer.config import load_config
@@ -29,10 +29,13 @@ def analyze(
     out.mkdir(parents=True, exist_ok=True)
     analysis_path = out / "analysis.json"
     report_path = out / "report.md"
+    diagnosis_pack_path = out / "diagnosis_pack.json"
     artifact.write_json(analysis_path)
     report_path.write_text(render_markdown_report(artifact), encoding="utf-8")
+    build_diagnosis_pack(artifact).write_json(diagnosis_pack_path)
     typer.echo(f"Wrote {analysis_path}")
     typer.echo(f"Wrote {report_path}")
+    typer.echo(f"Wrote {diagnosis_pack_path}")
 
 
 @app.command()
