@@ -1,0 +1,110 @@
+name: "NavigationAnalyzer"
+description: "Turn a ROS2 navigation bag (or canonical JSON) into a CI-grade regression report with hypotheses, evidence windows, and a PR-comment-ready Markdown summary."
+author: "rsasaki0109"
+branding:
+  icon: "alert-triangle"
+  color: "orange"
+
+inputs:
+  bag:
+    description: "Path to a ROS2 bag directory or canonical navigation_run.json."
+    required: true
+  config:
+    description: "Path to an analyzer YAML/JSON config. Defaults to the bundled config/default.yaml."
+    required: false
+    default: ""
+  output-dir:
+    description: "Directory for analysis.json, report.md, diagnosis_pack.json, diagnosis.md."
+    required: false
+    default: "outputs/navigation-analyzer"
+  fail-on-regression:
+    description: "Exit non-zero when the run has any failure findings (DiagnosisPack outcome.passed == false). Set to 'false' to keep the check green and rely on the step summary alone."
+    required: false
+    default: "true"
+  step-summary:
+    description: "Append diagnosis.md to GITHUB_STEP_SUMMARY so the PR Check page shows the verdict and hypotheses inline."
+    required: false
+    default: "true"
+  python-version:
+    description: "Python version for the analyzer environment."
+    required: false
+    default: "3.12"
+
+outputs:
+  diagnosis-md-path:
+    description: "Absolute path to the generated diagnosis.md."
+    value: ${{ steps.analyze.outputs.diagnosis_md_path }}
+  diagnosis-pack-path:
+    description: "Absolute path to the generated diagnosis_pack.json."
+    value: ${{ steps.analyze.outputs.diagnosis_pack_path }}
+  passed:
+    description: "DiagnosisPack outcome.passed as 'true' or 'false'."
+    value: ${{ steps.analyze.outputs.passed }}
+  primary-failure:
+    description: "Primary failure type, or empty when none."
+    value: ${{ steps.analyze.outputs.primary_failure }}
+  failure-count:
+    description: "Number of FailureFinding records in the run."
+    value: ${{ steps.analyze.outputs.failure_count }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Install NavigationAnalyzer
+      shell: bash
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e "${{ github.action_path }}/backend"
+
+    - name: Analyze run
+      id: analyze
+      shell: bash
+      env:
+        NA_BAG: ${{ inputs.bag }}
+        NA_CONFIG: ${{ inputs.config }}
+        NA_OUT: ${{ inputs.output-dir }}
+        NA_FAIL: ${{ inputs.fail-on-regression }}
+        NA_SUMMARY: ${{ inputs.step-summary }}
+        NA_ACTION_PATH: ${{ github.action_path }}
+      run: |
+        set -euo pipefail
+        mkdir -p "${NA_OUT}"
+
+        config_flag=()
+        if [[ -n "${NA_CONFIG}" ]]; then
+          config_flag=(--config "${NA_CONFIG}")
+        else
+          config_flag=(--config "${NA_ACTION_PATH}/config/default.yaml")
+        fi
+
+        navigation-analyzer analyze \
+          --bag "${NA_BAG}" \
+          "${config_flag[@]}" \
+          --out "${NA_OUT}"
+
+        diagnosis_md="${NA_OUT}/diagnosis.md"
+        diagnosis_pack="${NA_OUT}/diagnosis_pack.json"
+
+        echo "diagnosis_md_path=${diagnosis_md}" >> "${GITHUB_OUTPUT}"
+        echo "diagnosis_pack_path=${diagnosis_pack}" >> "${GITHUB_OUTPUT}"
+
+        passed=$(python -c "import json,sys; d=json.load(open('${diagnosis_pack}')); print(str(d['outcome']['passed']).lower())")
+        primary=$(python -c "import json,sys; d=json.load(open('${diagnosis_pack}')); print(d['outcome']['primary_failure'] or '')")
+        failure_count=$(python -c "import json,sys; d=json.load(open('${diagnosis_pack}')); print(d['outcome']['failure_count'])")
+        echo "passed=${passed}" >> "${GITHUB_OUTPUT}"
+        echo "primary_failure=${primary}" >> "${GITHUB_OUTPUT}"
+        echo "failure_count=${failure_count}" >> "${GITHUB_OUTPUT}"
+
+        if [[ "${NA_SUMMARY}" == "true" && -n "${GITHUB_STEP_SUMMARY:-}" && -f "${diagnosis_md}" ]]; then
+          cat "${diagnosis_md}" >> "${GITHUB_STEP_SUMMARY}"
+        fi
+
+        if [[ "${NA_FAIL}" == "true" && "${passed}" != "true" ]]; then
+          echo "::error::NavigationAnalyzer regression detected (primary_failure=${primary}, failure_count=${failure_count})"
+          exit 1
+        fi

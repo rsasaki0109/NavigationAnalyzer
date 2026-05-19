@@ -50,3 +50,52 @@ jobs:
       - name: Build frontend
         working-directory: frontend
         run: npm run build
+
+  action-selftest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Analyze success_clean (expect pass)
+        id: pass_case
+        uses: ./
+        with:
+          bag: examples/zoo/success_clean/navigation_run.json
+          output-dir: outputs/action-selftest/success_clean
+
+      - name: Verify pass case outputs
+        run: |
+          set -e
+          test "${{ steps.pass_case.outputs.passed }}" = "true"
+          test -z "${{ steps.pass_case.outputs.primary-failure }}"
+          test -f outputs/action-selftest/success_clean/diagnosis.md
+          test -f outputs/action-selftest/success_clean/diagnosis_pack.json
+
+      - name: Analyze oscillation_near_goal (gate disabled)
+        id: fail_case
+        uses: ./
+        with:
+          bag: examples/zoo/oscillation_near_goal/navigation_run.json
+          output-dir: outputs/action-selftest/oscillation
+          fail-on-regression: "false"
+
+      - name: Verify fail case outputs
+        run: |
+          set -e
+          test "${{ steps.fail_case.outputs.passed }}" = "false"
+          test "${{ steps.fail_case.outputs.primary-failure }}" = "oscillation"
+          test "${{ steps.fail_case.outputs.failure-count }}" = "1"
+
+      - name: Analyze oscillation_near_goal (gate enabled, expect failure)
+        id: gate_case
+        uses: ./
+        continue-on-error: true
+        with:
+          bag: examples/zoo/oscillation_near_goal/navigation_run.json
+          output-dir: outputs/action-selftest/oscillation-gated
+          fail-on-regression: "true"
+
+      - name: Verify gated step failed
+        run: |
+          set -e
+          test "${{ steps.gate_case.outcome }}" = "failure"

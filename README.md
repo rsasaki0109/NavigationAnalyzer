@@ -73,6 +73,23 @@ tuned to trip exactly one rule, with the produced `diagnosis.md`
 snapshot committed beside the input. Regenerate with
 `scripts/run_failure_zoo.sh`.
 
+## GitHub Action
+
+`action.yml` at the repository root exposes NavigationAnalyzer as a
+composite GitHub Action that gates navigation regressions on PRs and
+surfaces `diagnosis.md` inline in the PR Checks page via
+`$GITHUB_STEP_SUMMARY`.
+
+```yaml
+- uses: rsasaki0109/NavigationAnalyzer@v0
+  with:
+    bag: artifacts/nav_smoke.json
+    fail-on-regression: true
+```
+
+See [docs/github_action.md](docs/github_action.md) for the full input/output
+table, artifact retention, and PR comment recipes.
+
 The same command also writes machine-readable artifacts:
 
 ```text
