@@ -31,6 +31,7 @@ class Sample:
     collision: bool = False
     recovery_event: bool = False
     localization_error: float | None = 0.05
+    tf_age_s: float | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -43,6 +44,7 @@ class Sample:
             "collision": self.collision,
             "recovery_event": self.recovery_event,
             "localization_error": self.localization_error,
+            "tf_age_s": self.tf_age_s,
         }
 
 
@@ -335,6 +337,45 @@ def build_nav2_yaw_violation() -> dict[str, Any]:
     }
 
 
+def build_tf_dropout() -> dict[str, Any]:
+    """TF chain stalls mid-run: localization stops publishing while motion continues."""
+
+    goal = (5.0, 0.0)
+    samples: list[Sample] = []
+    for i in range(21):
+        t = float(i) * 0.5  # 0.5s spacing, 21 samples → 10s run
+        x = min(5.0, 0.25 * i)
+        # tf_age is healthy at the start (~0.05s), spikes to ~0.9s during 4-7s, recovers after.
+        if 4.0 <= t <= 7.0:
+            tf_age = 0.55 + 0.1 * (t - 4.0)
+        else:
+            tf_age = 0.05
+        samples.append(
+            Sample(
+                t=t,
+                x=x,
+                y=0.0,
+                cmd_v=0.5 if x < goal[0] else 0.0,
+                cmd_w=0.0,
+                goal_distance=_dist(x, 0.0, *goal),
+                obstacle_distance=1.4,
+                tf_age_s=tf_age,
+            )
+        )
+    return {
+        "run_id": "zoo_tf_dropout",
+        "source": "examples/zoo/tf_dropout/navigation_run.json",
+        "goal": {"x": goal[0], "y": goal[1]},
+        "goal_pose": {"x": goal[0], "y": goal[1], "yaw": 0.0},
+        "planned_path": _line_path(*goal),
+        "samples": [s.to_dict() for s in samples],
+        "metadata": {
+            "stack": "nav2",
+            "scenario": "TF chain stalls for ~3s mid-run while the robot keeps moving",
+        },
+    }
+
+
 FIXTURES = {
     "success_clean": build_success_clean,
     "oscillation_near_goal": build_oscillation,
@@ -343,6 +384,7 @@ FIXTURES = {
     "dynamic_obstacle_freeze": build_dynamic_obstacle_freeze,
     "planner_divergence": build_planner_divergence,
     "nav2_yaw_violation": build_nav2_yaw_violation,
+    "tf_dropout": build_tf_dropout,
 }
 
 

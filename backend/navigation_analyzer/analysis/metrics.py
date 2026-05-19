@@ -20,6 +20,7 @@ def compute_metrics(run: NavigationRun, config: AnalyzerConfig) -> dict[str, Met
     route_line_errors = _route_line_errors(run)
     route_lanelet_metrics = compute_route_lanelet_metrics(run, config.lanelet2_map)
     stopped_duration = _final_stopped_duration(samples, stopped_velocity=0.05)
+    tf_health = _tf_health(samples)
 
     return {
         "success_rate": MetricResult(
@@ -154,6 +155,24 @@ def compute_metrics(run: NavigationRun, config: AnalyzerConfig) -> dict[str, Met
             unit="count",
             description="Number of preferred route lanelets found in the configured lanelet2 map.",
         ),
+        "tf_max_age_s": MetricResult(
+            name="tf_max_age_s",
+            value=tf_health["max_age_s"],
+            unit="s",
+            description="Maximum observed TF chain age across samples (None when no sample carries tf_age_s).",
+        ),
+        "tf_mean_age_s": MetricResult(
+            name="tf_mean_age_s",
+            value=tf_health["mean_age_s"],
+            unit="s",
+            description="Mean TF chain age across samples that report tf_age_s.",
+        ),
+        "tf_health_sample_coverage": MetricResult(
+            name="tf_health_sample_coverage",
+            value=tf_health["coverage"],
+            unit="ratio",
+            description="Fraction of samples that carry a tf_age_s reading.",
+        ),
     }
 
 
@@ -191,6 +210,20 @@ def _time_to_goal(samples, goal_tolerance_m: float) -> float | None:
         if sample.goal_distance is not None and sample.goal_distance <= goal_tolerance_m:
             return sample.t - start_t
     return None
+
+
+def _tf_health(samples) -> dict[str, float | None]:
+    ages = [sample.tf_age_s for sample in samples if sample.tf_age_s is not None]
+    if not samples:
+        return {"max_age_s": None, "mean_age_s": None, "coverage": None}
+    coverage = len(ages) / len(samples) if samples else 0.0
+    if not ages:
+        return {"max_age_s": None, "mean_age_s": None, "coverage": coverage}
+    return {
+        "max_age_s": max(ages),
+        "mean_age_s": sum(ages) / len(ages),
+        "coverage": coverage,
+    }
 
 
 def _collision_count(run: NavigationRun, config: AnalyzerConfig) -> int:

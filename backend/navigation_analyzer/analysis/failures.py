@@ -17,6 +17,7 @@ def detect_failures(run: NavigationRun, config: AnalyzerConfig) -> list[FailureF
     findings.extend(_narrow_passage(samples, config))
     findings.extend(_dynamic_obstacle_freeze(samples))
     findings.extend(_planner_divergence(run, config))
+    findings.extend(_tf_dropout(samples, config))
     return sorted(findings, key=lambda finding: finding.timestamp)
 
 
@@ -193,6 +194,61 @@ def _planner_divergence(run: NavigationRun, config: AnalyzerConfig) -> list[Fail
             possible_causes=possible_causes,
         )
     ]
+
+
+def _tf_dropout(samples, config: AnalyzerConfig) -> list[FailureFinding]:
+    if not samples or all(sample.tf_age_s is None for sample in samples):
+        return []
+    threshold = config.tf_dropout_age_s
+    sustained = config.tf_dropout_sustained_s
+    windows: list[tuple[float, float, float]] = []  # (start_t, end_t, peak_age)
+    run_start: float | None = None
+    run_end: float | None = None
+    run_peak = 0.0
+    for sample in samples:
+        age = sample.tf_age_s
+        if age is not None and age >= threshold:
+            if run_start is None:
+                run_start = sample.t
+                run_peak = age
+            else:
+                run_peak = max(run_peak, age)
+            run_end = sample.t
+        else:
+            if run_start is not None and run_end is not None:
+                windows.append((run_start, run_end, run_peak))
+            run_start = None
+            run_end = None
+            run_peak = 0.0
+    if run_start is not None and run_end is not None:
+        windows.append((run_start, run_end, run_peak))
+    for window_start, window_end, window_peak in windows:
+        if window_end - window_start < sustained:
+            continue
+        severity = Severity.high if window_peak >= threshold * 2 else Severity.medium
+        return [
+            FailureFinding(
+                failure_type="tf_dropout",
+                timestamp=window_start,
+                severity=severity,
+                confidence=0.78,
+                evidence={
+                    "tf_dropout_age_s": threshold,
+                    "tf_dropout_sustained_s": sustained,
+                    "window_start_s": window_start,
+                    "window_end_s": window_end,
+                    "window_duration_s": window_end - window_start,
+                    "peak_tf_age_s": window_peak,
+                },
+                possible_causes=[
+                    "amcl or localization node stopped publishing map->odom",
+                    "robot_state_publisher stalled (odom->base_link gap)",
+                    "system clock skew between TF publisher and consumer",
+                    "DDS network drop or QoS mismatch",
+                ],
+            )
+        ]
+    return []
 
 
 def _route_context(run: NavigationRun, sample) -> dict:

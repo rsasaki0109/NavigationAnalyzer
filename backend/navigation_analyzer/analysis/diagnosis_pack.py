@@ -29,6 +29,7 @@ _FAILURE_TITLES = {
     "narrow_passage_failure": "Robot slowed in tight clearance and did not reach goal",
     "dynamic_obstacle_freeze": "Robot froze near a non-contact obstacle",
     "planner_divergence": "Trajectory diverged from the planned path",
+    "tf_dropout": "TF chain stayed stale longer than the dropout threshold",
 }
 
 

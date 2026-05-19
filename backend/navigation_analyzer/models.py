@@ -37,6 +37,10 @@ class NavigationSample(BaseModel):
     collision: bool = False
     recovery_event: bool = False
     localization_error: float | None = None
+    tf_age_s: float | None = Field(
+        default=None,
+        description="Age of the relevant TF chain at this sample (seconds); typically max(now - latest_stamp) over map→odom→base_link.",
+    )
 
 
 class Costmap(BaseModel):
@@ -126,6 +130,8 @@ class AnalyzerConfig(BaseModel):
     route_lanelet_deviation_warning_m: float = 1.0
     nav2_xy_goal_tolerance_m: float = 0.25
     nav2_yaw_goal_tolerance_rad: float = 0.25
+    tf_dropout_age_s: float = 0.5
+    tf_dropout_sustained_s: float = 1.0
     rosbag_topics: RosbagTopicConfig = Field(default_factory=RosbagTopicConfig)
 
 

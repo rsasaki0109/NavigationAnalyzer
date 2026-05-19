@@ -191,6 +191,9 @@ Initial metrics:
 | `route_lanelet_progress_ratio` | final projection progress along the matched preferred route lanelets |
 | `route_lanelet_remaining_distance` | remaining centerline distance along matched preferred route lanelets |
 | `route_lanelet_matched_count` | count of preferred route lanelets found in the configured map |
+| `tf_max_age_s` | maximum observed TF chain age across samples (None when no sample carries `tf_age_s`) |
+| `tf_mean_age_s` | mean TF chain age across samples that report `tf_age_s` |
+| `tf_health_sample_coverage` | fraction of samples that carry a `tf_age_s` reading |
 
 ## Failure Taxonomy Design
 
@@ -213,6 +216,7 @@ Initial taxonomy:
 | `narrow_passage_failure` | low clearance and low forward speed |
 | `dynamic_obstacle_freeze` | freeze near a non-contact obstacle |
 | `planner_divergence` | trajectory moves far from planned path; Autoware route metadata is added to evidence when available |
+| `tf_dropout` | `tf_age_s` stays above `tf_dropout_age_s` for at least `tf_dropout_sustained_s`; severity escalates to `high` when peak age exceeds 2× the threshold |
 
 For Autoware runs, `planner_divergence` evidence can include:
 

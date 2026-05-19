@@ -110,7 +110,8 @@
       "obstacle_distance": 1.5,
       "collision": false,
       "recovery_event": false,
-      "localization_error": 0.05
+      "localization_error": 0.05,
+      "tf_age_s": null
     },
     {
       "t": 1.0,
@@ -125,7 +126,8 @@
       "obstacle_distance": 1.5,
       "collision": false,
       "recovery_event": false,
-      "localization_error": 0.13
+      "localization_error": 0.13,
+      "tf_age_s": null
     },
     {
       "t": 2.0,
@@ -140,7 +142,8 @@
       "obstacle_distance": 1.5,
       "collision": false,
       "recovery_event": false,
-      "localization_error": 0.21000000000000002
+      "localization_error": 0.21000000000000002,
+      "tf_age_s": null
     },
     {
       "t": 3.0,
@@ -155,7 +158,8 @@
       "obstacle_distance": 1.5,
       "collision": false,
       "recovery_event": false,
-      "localization_error": 0.29
+      "localization_error": 0.29,
+      "tf_age_s": null
     },
     {
       "t": 4.0,
@@ -170,7 +174,8 @@
       "obstacle_distance": 1.5,
       "collision": false,
       "recovery_event": false,
-      "localization_error": 0.37
+      "localization_error": 0.37,
+      "tf_age_s": null
     },
     {
       "t": 5.0,
@@ -185,7 +190,8 @@
       "obstacle_distance": 1.5,
       "collision": false,
       "recovery_event": false,
-      "localization_error": 0.45
+      "localization_error": 0.45,
+      "tf_age_s": null
     },
     {
       "t": 6.0,
@@ -200,7 +206,8 @@
       "obstacle_distance": 1.5,
       "collision": false,
       "recovery_event": false,
-      "localization_error": 0.53
+      "localization_error": 0.53,
+      "tf_age_s": null
     },
     {
       "t": 7.0,
@@ -215,7 +222,8 @@
       "obstacle_distance": 1.5,
       "collision": false,
       "recovery_event": false,
-      "localization_error": 0.6100000000000001
+      "localization_error": 0.6100000000000001,
+      "tf_age_s": null
     },
     {
       "t": 8.0,
@@ -230,7 +238,8 @@
       "obstacle_distance": 1.5,
       "collision": false,
       "recovery_event": false,
-      "localization_error": 0.6900000000000001
+      "localization_error": 0.6900000000000001,
+      "tf_age_s": null
     },
     {
       "t": 9.0,
@@ -245,7 +254,8 @@
       "obstacle_distance": 1.5,
       "collision": false,
       "recovery_event": false,
-      "localization_error": 0.77
+      "localization_error": 0.77,
+      "tf_age_s": null
     },
     {
       "t": 10.0,
@@ -260,7 +270,8 @@
       "obstacle_distance": 1.5,
       "collision": false,
       "recovery_event": false,
-      "localization_error": 0.8500000000000001
+      "localization_error": 0.8500000000000001,
+      "tf_age_s": null
     }
   ],
   "metadata": {

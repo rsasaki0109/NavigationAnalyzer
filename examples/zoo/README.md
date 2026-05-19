@@ -26,6 +26,7 @@ directly:
 | [localization_drift](localization_drift/diagnosis.md) | **FAIL** | `localization_drift` | — |
 | [dynamic_obstacle_freeze](dynamic_obstacle_freeze/diagnosis.md) | **FAIL** | `dynamic_obstacle_freeze` | — |
 | [planner_divergence](planner_divergence/diagnosis.md) | **FAIL** | `planner_divergence` | — |
+| [tf_dropout](tf_dropout/diagnosis.md) | **FAIL** | `tf_dropout` | — |
 
 `nav2_yaw_violation` is the headline case for the Nav2 SimpleGoalChecker
 auditor: `success_rate=1.0` (the run reached the goal by the analyzer's
