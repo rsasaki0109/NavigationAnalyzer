@@ -1,6 +1,6 @@
 [project]
 name = "navigation-analyzer"
-version = "0.2.0"
+version = "0.3.0"
 description = "CLI-first navigation observability and failure analysis for ROS2/Nav2 bags."
 requires-python = ">=3.10"
 authors = [{ name = "NavigationAnalyzer contributors" }]
