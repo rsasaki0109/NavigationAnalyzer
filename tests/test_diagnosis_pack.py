@@ -72,6 +72,7 @@ def test_diagnosis_pack_failing_run_emits_hypothesis_and_window():
 
     assert len(pack.top_hypotheses) == len(artifact.failures)
     assert len(pack.evidence_windows) == len(artifact.failures)
+    assert len(pack.diagnostics) == len(artifact.diagnostics)
 
     hypothesis = pack.top_hypotheses[0]
     assert hypothesis.id.startswith("hyp_")

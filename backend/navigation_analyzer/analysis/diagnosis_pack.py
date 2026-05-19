@@ -60,6 +60,7 @@ def build_diagnosis_pack(artifact: AnalysisArtifact) -> DiagnosisPack:
         run=summary,
         outcome=outcome,
         top_hypotheses=hypotheses,
+        diagnostics=list(artifact.diagnostics),
         evidence_windows=evidence_windows,
         missing_signals=missing_signals,
     )

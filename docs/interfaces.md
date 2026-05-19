@@ -294,6 +294,13 @@ diagnostics:
       "source_timestamp": 15.0
     }
   ],
+  "diagnostics": [
+    {
+      "diagnostic_type": "nav2_goal_tolerance_violation",
+      "level": "warning",
+      "summary": "Final pose violates Nav2 SimpleGoalChecker tolerance on xy."
+    }
+  ],
   "evidence_windows": [
     {
       "id": "win_001",
@@ -311,6 +318,8 @@ diagnostics:
   "missing_signals": ["route_context"]
 }
 ```
+
+`diagnostics` are passed through from `AnalysisArtifact.diagnostics` so the same advisory warnings (e.g. `nav2_goal_tolerance_violation`, `goal_reached_route_progress_mismatch`) appear in `diagnosis.md` and are available to LLM agents without rereading the full `analysis.json`.
 
 Design rules for this layer:
 

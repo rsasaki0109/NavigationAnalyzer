@@ -79,3 +79,14 @@ def test_success_run_markdown_has_pass_header_and_no_hypotheses():
     assert "No top hypotheses" in markdown
     assert "hyp_" not in markdown
     assert "## Missing Signals" in markdown
+    assert "## Diagnostics" not in markdown
+
+
+def test_markdown_renders_nav2_goal_tolerance_diagnostic():
+    pack = build_diagnosis_pack(analyze_run(_failing_run(), AnalyzerConfig()))
+    markdown = render_diagnosis_markdown(pack)
+
+    assert "## Diagnostics" in markdown
+    assert "nav2_goal_tolerance_violation" in markdown
+    assert "axes_violated" in markdown
+    assert "Recommendations:" in markdown

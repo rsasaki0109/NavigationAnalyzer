@@ -185,6 +185,7 @@ class DiagnosisPack(BaseModel):
     run: DiagnosisRunSummary
     outcome: DiagnosisOutcome
     top_hypotheses: list[Hypothesis] = Field(default_factory=list)
+    diagnostics: list[DiagnosticFinding] = Field(default_factory=list)
     evidence_windows: list[EvidenceWindow] = Field(default_factory=list)
     missing_signals: list[str] = Field(default_factory=list)
 

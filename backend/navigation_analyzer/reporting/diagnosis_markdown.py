@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from navigation_analyzer.models import DiagnosisPack, EvidenceWindow, Hypothesis
+from navigation_analyzer.models import DiagnosisPack, DiagnosticFinding, EvidenceWindow, Hypothesis
 
 
 def render_diagnosis_markdown(pack: DiagnosisPack) -> str:
@@ -18,6 +18,7 @@ def render_diagnosis_markdown(pack: DiagnosisPack) -> str:
     lines.extend(_render_meta(pack))
     lines.append("")
     lines.extend(_render_hypotheses(pack.top_hypotheses, windows_by_id))
+    lines.extend(_render_diagnostics(pack.diagnostics))
     lines.extend(_render_missing_signals(pack.missing_signals))
     lines.append("")
     lines.append("---")
@@ -146,6 +147,58 @@ def _format_stats_line(name: str, stats: dict[str, Any]) -> str:
         if isinstance(value, int | float):
             pieces.append(f"{key}={_fmt(value)}")
     return f"{name}: " + ", ".join(pieces)
+
+
+def _render_diagnostics(diagnostics: list[DiagnosticFinding]) -> list[str]:
+    if not diagnostics:
+        return []
+    lines = ["## Diagnostics", ""]
+    for diagnostic in diagnostics:
+        lines.append(
+            f"### `{diagnostic.diagnostic_type}` — {diagnostic.level.value} "
+            f"(confidence {diagnostic.confidence:.2f}, t={diagnostic.timestamp:.2f}s)"
+        )
+        lines.append("")
+        lines.append(diagnostic.summary)
+        evidence_lines = _summarize_diagnostic_evidence(diagnostic.evidence)
+        if evidence_lines:
+            lines.append("")
+            lines.append("Evidence:")
+            for evidence_line in evidence_lines:
+                lines.append(f"- {evidence_line}")
+        if diagnostic.recommendations:
+            lines.append("")
+            lines.append("Recommendations:")
+            for recommendation in diagnostic.recommendations:
+                lines.append(f"- {recommendation}")
+        lines.append("")
+    return lines
+
+
+def _summarize_diagnostic_evidence(evidence: dict[str, Any]) -> list[str]:
+    out: list[str] = []
+    for key, value in evidence.items():
+        if value is None:
+            continue
+        if isinstance(value, bool):
+            out.append(f"{key}: {str(value).lower()}")
+            continue
+        if isinstance(value, int):
+            out.append(f"{key}: {value}")
+            continue
+        if isinstance(value, float):
+            out.append(f"{key}: {_fmt(value)}")
+            continue
+        if isinstance(value, str):
+            out.append(f"{key}: {value}")
+            continue
+        if isinstance(value, list):
+            preview = ", ".join(str(item) for item in value[:5])
+            suffix = "" if len(value) <= 5 else f", +{len(value) - 5} more"
+            out.append(f"{key}: [{preview}{suffix}]")
+            continue
+        out.append(f"{key}: {value}")
+    return out
 
 
 def _render_missing_signals(missing_signals: list[str]) -> list[str]:
