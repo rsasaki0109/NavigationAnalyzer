@@ -237,6 +237,7 @@ Initial diagnostics:
 | --- | --- |
 | `goal_reached_route_progress_mismatch` | success is true, but lanelet route progress remains below the configured ratio with remaining centerline distance |
 | `route_lanelet_deviation` | maximum distance to matched route lanelet centerline exceeds the configured warning threshold |
+| `nav2_goal_tolerance_violation` | final pose violates Nav2 SimpleGoalChecker xy or yaw tolerance; evidence carries observed errors, configured tolerances, per-axis pass/fail, and the analyzer's `success_rate` at audit time so reviewers can spot regressions hidden by a lenient analyzer tolerance |
 
 Benchmark profiles can optionally gate diagnostics with:
 

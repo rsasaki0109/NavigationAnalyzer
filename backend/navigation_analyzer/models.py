@@ -124,6 +124,8 @@ class AnalyzerConfig(BaseModel):
     route_progress_mismatch_ratio: float = 0.95
     route_progress_mismatch_remaining_m: float = 3.0
     route_lanelet_deviation_warning_m: float = 1.0
+    nav2_xy_goal_tolerance_m: float = 0.25
+    nav2_yaw_goal_tolerance_rad: float = 0.25
     rosbag_topics: RosbagTopicConfig = Field(default_factory=RosbagTopicConfig)
 
 

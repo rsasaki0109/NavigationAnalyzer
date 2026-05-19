@@ -14,6 +14,7 @@ def generate_diagnostics(
     diagnostics: list[DiagnosticFinding] = []
     diagnostics.extend(_goal_reached_route_progress_mismatch(run, metrics, config))
     diagnostics.extend(_route_lanelet_deviation(run, metrics, config))
+    diagnostics.extend(_nav2_goal_tolerance_violation(run, metrics, config))
     return diagnostics
 
 
@@ -91,6 +92,81 @@ def _route_lanelet_deviation(
             ],
         )
     ]
+
+
+def _nav2_goal_tolerance_violation(
+    run: NavigationRun,
+    metrics: dict[str, MetricResult],
+    config: AnalyzerConfig,
+) -> list[DiagnosticFinding]:
+    if not _is_nav2_run(run):
+        return []
+
+    goal_distance = _metric_number(metrics, "goal_distance")
+    yaw_error = _metric_number(metrics, "final_yaw_error")
+    if goal_distance is None and yaw_error is None:
+        return []
+
+    xy_tolerance = config.nav2_xy_goal_tolerance_m
+    yaw_tolerance = config.nav2_yaw_goal_tolerance_rad
+
+    xy_pass: bool | None = None if goal_distance is None else goal_distance <= xy_tolerance
+    yaw_pass: bool | None = None if yaw_error is None else abs(yaw_error) <= yaw_tolerance
+
+    if xy_pass is not False and yaw_pass is not False:
+        return []
+
+    violations: list[str] = []
+    if xy_pass is False:
+        violations.append("xy")
+    if yaw_pass is False:
+        violations.append("yaw")
+
+    success_rate = _metric_number(metrics, "success_rate")
+    return [
+        DiagnosticFinding(
+            diagnostic_type="nav2_goal_tolerance_violation",
+            timestamp=run.samples[-1].t,
+            level=DiagnosticLevel.warning,
+            confidence=0.8,
+            summary=(
+                "Final pose violates Nav2 SimpleGoalChecker tolerance on "
+                + " and ".join(violations)
+                + "."
+            ),
+            evidence={
+                "axes_violated": violations,
+                "nav2_xy_goal_tolerance_m": xy_tolerance,
+                "nav2_yaw_goal_tolerance_rad": yaw_tolerance,
+                "final_goal_distance_m": goal_distance,
+                "final_yaw_error_rad": yaw_error,
+                "xy_pass": xy_pass,
+                "yaw_pass": yaw_pass,
+                "success_rate_at_audit": success_rate,
+                "final_lateral_error_m": _metric_number(metrics, "final_lateral_error"),
+                "final_longitudinal_error_m": _metric_number(metrics, "final_longitudinal_error"),
+            },
+            recommendations=[
+                "Compare analyzer goal_tolerance_m with Nav2 SimpleGoalChecker xy_goal_tolerance and yaw_goal_tolerance.",
+                "If success_rate is 1.0 but axes_violated is non-empty, the analyzer tolerance is more lenient than Nav2's; tighten it for CI.",
+                "Inspect controller angular saturation and goal yaw target when yaw violations recur.",
+            ],
+        )
+    ]
+
+
+def _is_nav2_run(run: NavigationRun) -> bool:
+    stack = run.metadata.get("stack")
+    if isinstance(stack, str) and stack.lower() == "nav2":
+        return True
+    selected_topics = run.metadata.get("selected_topics")
+    if isinstance(selected_topics, dict):
+        recovery = selected_topics.get("recovery")
+        if isinstance(recovery, list):
+            for topic in recovery:
+                if isinstance(topic, str) and ("behavior_server" in topic or "recoveries" in topic):
+                    return True
+    return False
 
 
 def _metric_number(metrics: dict[str, MetricResult], name: str) -> float | None:

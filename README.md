@@ -29,7 +29,7 @@ The goal is a navigation failure analysis platform for ROS2/Nav2 and Autoware: D
   - dynamic obstacle freeze
   - planner divergence
 - JSON and Markdown reports for AI agents and CI.
-- Structured diagnostics for non-fatal evaluation warnings.
+- Structured diagnostics for non-fatal evaluation warnings, including a Nav2 SimpleGoalChecker goal-tolerance auditor.
 - React/Three.js/Plotly web visualization with trajectory replay, metrics, timeline, failure markers, and costmap/obstacle views.
 - Docker workflow for Autoware planning simulator bags.
 
