@@ -65,6 +65,14 @@ outputs/demo_sample/nav2_success/report.md
 outputs/demo_sample/benchmark.md
 ```
 
+## Failure Zoo
+
+For a no-ROS gallery of what `diagnosis.md` looks like across the failure
+taxonomy, see [examples/zoo/](examples/zoo/README.md). Each fixture is
+tuned to trip exactly one rule, with the produced `diagnosis.md`
+snapshot committed beside the input. Regenerate with
+`scripts/run_failure_zoo.sh`.
+
 The same command also writes machine-readable artifacts:
 
 ```text

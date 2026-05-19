@@ -1,0 +1,420 @@
+{
+  "run_id": "zoo_planner_divergence",
+  "source": "examples/zoo/planner_divergence/navigation_run.json",
+  "goal": {
+    "x": 10.0,
+    "y": 0.0
+  },
+  "goal_pose": {
+    "x": 10.0,
+    "y": 0.0,
+    "yaw": 0.0
+  },
+  "planned_path": [
+    {
+      "x": 0.0,
+      "y": 0.0
+    },
+    {
+      "x": 0.5,
+      "y": 0.0
+    },
+    {
+      "x": 1.0,
+      "y": 0.0
+    },
+    {
+      "x": 1.5,
+      "y": 0.0
+    },
+    {
+      "x": 2.0,
+      "y": 0.0
+    },
+    {
+      "x": 2.5,
+      "y": 0.0
+    },
+    {
+      "x": 3.0,
+      "y": 0.0
+    },
+    {
+      "x": 3.5,
+      "y": 0.0
+    },
+    {
+      "x": 4.0,
+      "y": 0.0
+    },
+    {
+      "x": 4.5,
+      "y": 0.0
+    },
+    {
+      "x": 5.0,
+      "y": 0.0
+    },
+    {
+      "x": 5.5,
+      "y": 0.0
+    },
+    {
+      "x": 6.0,
+      "y": 0.0
+    },
+    {
+      "x": 6.5,
+      "y": 0.0
+    },
+    {
+      "x": 7.0,
+      "y": 0.0
+    },
+    {
+      "x": 7.5,
+      "y": 0.0
+    },
+    {
+      "x": 8.0,
+      "y": 0.0
+    },
+    {
+      "x": 8.5,
+      "y": 0.0
+    },
+    {
+      "x": 9.0,
+      "y": 0.0
+    },
+    {
+      "x": 9.5,
+      "y": 0.0
+    },
+    {
+      "x": 10.0,
+      "y": 0.0
+    }
+  ],
+  "samples": [
+    {
+      "t": 0.0,
+      "pose": {
+        "x": 0.0,
+        "y": 0.0,
+        "yaw": 0.0
+      },
+      "cmd_v": 0.6,
+      "cmd_w": 0.0,
+      "goal_distance": 10.0,
+      "obstacle_distance": 1.4,
+      "collision": false,
+      "recovery_event": false,
+      "localization_error": 0.05
+    },
+    {
+      "t": 0.5,
+      "pose": {
+        "x": 0.5,
+        "y": 0.25,
+        "yaw": 0.0
+      },
+      "cmd_v": 0.6,
+      "cmd_w": 0.0,
+      "goal_distance": 9.503288904374106,
+      "obstacle_distance": 1.4,
+      "collision": false,
+      "recovery_event": false,
+      "localization_error": 0.05
+    },
+    {
+      "t": 1.0,
+      "pose": {
+        "x": 1.0,
+        "y": 0.5,
+        "yaw": 0.0
+      },
+      "cmd_v": 0.6,
+      "cmd_w": 0.0,
+      "goal_distance": 9.013878188659973,
+      "obstacle_distance": 1.4,
+      "collision": false,
+      "recovery_event": false,
+      "localization_error": 0.05
+    },
+    {
+      "t": 1.5,
+      "pose": {
+        "x": 1.5,
+        "y": 0.75,
+        "yaw": 0.0
+      },
+      "cmd_v": 0.6,
+      "cmd_w": 0.0,
+      "goal_distance": 8.533024082938006,
+      "obstacle_distance": 1.4,
+      "collision": false,
+      "recovery_event": false,
+      "localization_error": 0.05
+    },
+    {
+      "t": 2.0,
+      "pose": {
+        "x": 2.0,
+        "y": 1.0,
+        "yaw": 0.0
+      },
+      "cmd_v": 0.6,
+      "cmd_w": 0.0,
+      "goal_distance": 8.06225774829855,
+      "obstacle_distance": 1.4,
+      "collision": false,
+      "recovery_event": false,
+      "localization_error": 0.05
+    },
+    {
+      "t": 2.5,
+      "pose": {
+        "x": 2.5,
+        "y": 1.25,
+        "yaw": 0.0
+      },
+      "cmd_v": 0.6,
+      "cmd_w": 0.0,
+      "goal_distance": 7.603453162872775,
+      "obstacle_distance": 1.4,
+      "collision": false,
+      "recovery_event": false,
+      "localization_error": 0.05
+    },
+    {
+      "t": 3.0,
+      "pose": {
+        "x": 3.0,
+        "y": 1.5,
+        "yaw": 0.0
+      },
+      "cmd_v": 0.6,
+      "cmd_w": 0.0,
+      "goal_distance": 7.158910531638177,
+      "obstacle_distance": 1.4,
+      "collision": false,
+      "recovery_event": false,
+      "localization_error": 0.05
+    },
+    {
+      "t": 3.5,
+      "pose": {
+        "x": 3.5,
+        "y": 1.75,
+        "yaw": 0.0
+      },
+      "cmd_v": 0.6,
+      "cmd_w": 0.0,
+      "goal_distance": 6.73145600891813,
+      "obstacle_distance": 1.4,
+      "collision": false,
+      "recovery_event": false,
+      "localization_error": 0.05
+    },
+    {
+      "t": 4.0,
+      "pose": {
+        "x": 4.0,
+        "y": 2.0,
+        "yaw": 0.0
+      },
+      "cmd_v": 0.6,
+      "cmd_w": 0.0,
+      "goal_distance": 6.324555320336759,
+      "obstacle_distance": 1.4,
+      "collision": false,
+      "recovery_event": false,
+      "localization_error": 0.05
+    },
+    {
+      "t": 4.5,
+      "pose": {
+        "x": 4.5,
+        "y": 2.25,
+        "yaw": 0.0
+      },
+      "cmd_v": 0.6,
+      "cmd_w": 0.0,
+      "goal_distance": 5.942432162002357,
+      "obstacle_distance": 1.4,
+      "collision": false,
+      "recovery_event": false,
+      "localization_error": 0.05
+    },
+    {
+      "t": 5.0,
+      "pose": {
+        "x": 5.0,
+        "y": 2.5,
+        "yaw": 0.0
+      },
+      "cmd_v": 0.6,
+      "cmd_w": 0.0,
+      "goal_distance": 5.5901699437494745,
+      "obstacle_distance": 1.4,
+      "collision": false,
+      "recovery_event": false,
+      "localization_error": 0.05
+    },
+    {
+      "t": 5.5,
+      "pose": {
+        "x": 5.5,
+        "y": 2.25,
+        "yaw": 0.0
+      },
+      "cmd_v": 0.6,
+      "cmd_w": 0.0,
+      "goal_distance": 5.031152949374527,
+      "obstacle_distance": 1.4,
+      "collision": false,
+      "recovery_event": false,
+      "localization_error": 0.05
+    },
+    {
+      "t": 6.0,
+      "pose": {
+        "x": 6.0,
+        "y": 2.0,
+        "yaw": 0.0
+      },
+      "cmd_v": 0.6,
+      "cmd_w": 0.0,
+      "goal_distance": 4.47213595499958,
+      "obstacle_distance": 1.4,
+      "collision": false,
+      "recovery_event": false,
+      "localization_error": 0.05
+    },
+    {
+      "t": 6.5,
+      "pose": {
+        "x": 6.5,
+        "y": 1.75,
+        "yaw": 0.0
+      },
+      "cmd_v": 0.6,
+      "cmd_w": 0.0,
+      "goal_distance": 3.913118960624632,
+      "obstacle_distance": 1.4,
+      "collision": false,
+      "recovery_event": false,
+      "localization_error": 0.05
+    },
+    {
+      "t": 7.0,
+      "pose": {
+        "x": 7.0,
+        "y": 1.5000000000000002,
+        "yaw": 0.0
+      },
+      "cmd_v": 0.6,
+      "cmd_w": 0.0,
+      "goal_distance": 3.3541019662496847,
+      "obstacle_distance": 1.4,
+      "collision": false,
+      "recovery_event": false,
+      "localization_error": 0.05
+    },
+    {
+      "t": 7.5,
+      "pose": {
+        "x": 7.5,
+        "y": 1.25,
+        "yaw": 0.0
+      },
+      "cmd_v": 0.6,
+      "cmd_w": 0.0,
+      "goal_distance": 2.7950849718747373,
+      "obstacle_distance": 1.4,
+      "collision": false,
+      "recovery_event": false,
+      "localization_error": 0.05
+    },
+    {
+      "t": 8.0,
+      "pose": {
+        "x": 8.0,
+        "y": 0.9999999999999998,
+        "yaw": 0.0
+      },
+      "cmd_v": 0.6,
+      "cmd_w": 0.0,
+      "goal_distance": 2.23606797749979,
+      "obstacle_distance": 1.4,
+      "collision": false,
+      "recovery_event": false,
+      "localization_error": 0.05
+    },
+    {
+      "t": 8.5,
+      "pose": {
+        "x": 8.5,
+        "y": 0.7500000000000001,
+        "yaw": 0.0
+      },
+      "cmd_v": 0.6,
+      "cmd_w": 0.0,
+      "goal_distance": 1.6770509831248424,
+      "obstacle_distance": 1.4,
+      "collision": false,
+      "recovery_event": false,
+      "localization_error": 0.05
+    },
+    {
+      "t": 9.0,
+      "pose": {
+        "x": 9.0,
+        "y": 0.4999999999999999,
+        "yaw": 0.0
+      },
+      "cmd_v": 0.6,
+      "cmd_w": 0.0,
+      "goal_distance": 1.118033988749895,
+      "obstacle_distance": 1.4,
+      "collision": false,
+      "recovery_event": false,
+      "localization_error": 0.05
+    },
+    {
+      "t": 9.5,
+      "pose": {
+        "x": 9.5,
+        "y": 0.2500000000000002,
+        "yaw": 0.0
+      },
+      "cmd_v": 0.6,
+      "cmd_w": 0.0,
+      "goal_distance": 0.5590169943749476,
+      "obstacle_distance": 1.4,
+      "collision": false,
+      "recovery_event": false,
+      "localization_error": 0.05
+    },
+    {
+      "t": 10.0,
+      "pose": {
+        "x": 10.0,
+        "y": 0.0,
+        "yaw": 0.0
+      },
+      "cmd_v": 0.0,
+      "cmd_w": 0.0,
+      "goal_distance": 0.0,
+      "obstacle_distance": 1.4,
+      "collision": false,
+      "recovery_event": false,
+      "localization_error": 0.05
+    }
+  ],
+  "metadata": {
+    "stack": "nav2",
+    "scenario": "trajectory detours far from the planned path"
+  }
+}
