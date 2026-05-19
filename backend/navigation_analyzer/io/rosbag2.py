@@ -37,6 +37,7 @@ class _TransformEvent:
     x: float
     y: float
     yaw: float
+    stamp_t: float | None = None
 
 
 def read_rosbag2(path: Path, config: AnalyzerConfig | None = None) -> NavigationRun:
@@ -94,7 +95,7 @@ def read_rosbag2(path: Path, config: AnalyzerConfig | None = None) -> Navigation
         t = relative_t
 
         if topic in selected["tf"]:
-            transforms = _extract_transforms(msg, t)
+            transforms = _extract_transforms(msg, t, start_ns)
             for transform in transforms:
                 parent = _norm_frame(transform.parent)
                 child = _norm_frame(transform.child)
@@ -165,7 +166,9 @@ def read_rosbag2(path: Path, config: AnalyzerConfig | None = None) -> Navigation
             goal_time = route_time
             goal_source = "route_summary"
 
-    samples = _build_samples(pose_events, cmds, distances, recovery_times, goal_pose)
+    sample_times = sorted({event.t for event in pose_events})
+    tf_ages = compute_tf_ages_for_times(sample_times, map_to_odom, odom_to_base, direct_map_to_base)
+    samples = _build_samples(pose_events, cmds, distances, recovery_times, goal_pose, tf_ages)
     if goal_time is not None:
         samples = [sample for sample in samples if sample.t >= goal_time]
     return NavigationRun(
@@ -290,11 +293,12 @@ def _extract_cmd(msg: Any) -> tuple[float, float] | None:
     return float(getattr(linear, "x", 0.0)), float(getattr(angular, "z", 0.0))
 
 
-def _extract_transforms(msg: Any, t: float) -> list[_TransformEvent]:
+def _extract_transforms(msg: Any, t: float, start_ns: int | None) -> list[_TransformEvent]:
     transforms = []
     for transform in getattr(msg, "transforms", []):
         translation = transform.transform.translation
         rotation = transform.transform.rotation
+        stamp_t = _stamp_to_relative(getattr(transform.header, "stamp", None), start_ns)
         transforms.append(
             _TransformEvent(
                 t=t,
@@ -303,9 +307,23 @@ def _extract_transforms(msg: Any, t: float) -> list[_TransformEvent]:
                 x=float(translation.x),
                 y=float(translation.y),
                 yaw=_yaw_from_quaternion(rotation),
+                stamp_t=stamp_t,
             )
         )
     return transforms
+
+
+def _stamp_to_relative(stamp: Any, start_ns: int | None) -> float | None:
+    if stamp is None or start_ns is None:
+        return None
+    sec = getattr(stamp, "sec", None)
+    nanosec = getattr(stamp, "nanosec", None)
+    if sec is None or nanosec is None:
+        return None
+    stamp_ns = int(sec) * 1_000_000_000 + int(nanosec)
+    if stamp_ns == 0:
+        return None
+    return (stamp_ns - start_ns) / 1e9
 
 
 def _extract_scan_distance(msg: Any) -> float | None:
@@ -461,6 +479,7 @@ def _build_samples(
     distances: list[_DistanceEvent],
     recovery_times: list[float],
     goal: Point2D | None,
+    tf_ages: dict[float, float | None] | None = None,
 ) -> list[NavigationSample]:
     samples = []
     for pose_event in sorted(poses, key=lambda event: event.t):
@@ -476,9 +495,53 @@ def _build_samples(
                 obstacle_distance=distance.distance if distance is not None else None,
                 collision=False,
                 recovery_event=any(abs(pose_event.t - recovery_t) <= 0.25 for recovery_t in recovery_times),
+                tf_age_s=tf_ages.get(pose_event.t) if tf_ages else None,
             )
         )
     return samples
+
+
+def compute_tf_ages_for_times(
+    sample_times: list[float],
+    map_to_odom: list[_TransformEvent],
+    odom_to_base: list[_TransformEvent],
+    direct_map_to_base: list[_TransformEvent],
+) -> dict[float, float | None]:
+    """Compute the TF chain age at each sample time.
+
+    Chain age at sample time T is T - min(latest stamp_t of each chain link at-or-before T).
+    Returns None for samples that have no usable TF stamps before them.
+    """
+
+    direct_stamps = sorted(t.stamp_t for t in direct_map_to_base if t.stamp_t is not None)
+    mo_stamps = sorted(t.stamp_t for t in map_to_odom if t.stamp_t is not None)
+    ob_stamps = sorted(t.stamp_t for t in odom_to_base if t.stamp_t is not None)
+
+    use_direct = bool(direct_stamps) and not (mo_stamps and ob_stamps)
+    ages: dict[float, float | None] = {}
+    for sample_t in sample_times:
+        if use_direct:
+            latest = _latest_at_or_before(direct_stamps, sample_t)
+            ages[sample_t] = None if latest is None else max(0.0, sample_t - latest)
+            continue
+        latest_mo = _latest_at_or_before(mo_stamps, sample_t)
+        latest_ob = _latest_at_or_before(ob_stamps, sample_t)
+        if latest_mo is None or latest_ob is None:
+            ages[sample_t] = None
+            continue
+        ages[sample_t] = max(0.0, sample_t - min(latest_mo, latest_ob))
+    return ages
+
+
+def _latest_at_or_before(sorted_stamps: list[float], reference: float) -> float | None:
+    if not sorted_stamps:
+        return None
+    latest: float | None = None
+    for stamp in sorted_stamps:
+        if stamp > reference:
+            break
+        latest = stamp
+    return latest
 
 
 def _build_map_poses(
